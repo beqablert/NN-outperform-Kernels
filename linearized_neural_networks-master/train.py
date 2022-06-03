@@ -31,6 +31,7 @@ def del_all_flags(FLAGS):
     for keys in keys_list:
         FLAGS.__delattr__(keys)
 
+# os.environ['CUDA_VISIBLE_DEVICES'] = "0"
 del_all_flags(flags.FLAGS)
 flags.DEFINE_float('learning_rate', 0.001, 'Learning rate for SGD')
 flags.DEFINE_float('drop_rate', 0.0, 'Dropout rate')
