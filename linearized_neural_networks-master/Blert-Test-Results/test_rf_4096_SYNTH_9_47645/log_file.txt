@@ -1,0 +1,81 @@
+Arguments:
+
+train.py:
+  --dataset: <NFMNIST|FMNIST|SYNTH|CIFAR2|CIFAR10>: The dataset used for the experiment.
+    (default: 'SYNTH')
+  --drop_rate: Dropout rate
+    (default: '0.0')
+    (a number)
+  --exp_name: The name of the experiment
+    (default: 'test')
+  --job_id: Unique job id assigned by the cluster
+    (default: '-1')
+    (an integer)
+  --learning_rate: Learning rate for SGD
+    (default: '0.001')
+    (a number)
+  --loss: <square|cross_entropy>: The loss used for training the model
+    (default: 'square')
+  --max_batch_size: Maximum allowed batch size
+    (default: '10000')
+    (an integer)
+  --max_cg_iters: Maximum number of CG / SGD iterations
+    (default: '750')
+    (an integer)
+  --max_ncg_iters: Maximum number of ncg iterations
+    (default: '0')
+    (an integer)
+  --model: <2layerNTK|rf|FullyConnected|Myrtle>: The model used for fitting the data
+    (default: 'rf')
+  --noise_ind: Index for the noise added to the data
+    (default: '9')
+    (an integer)
+  --num_layers: The number of layers
+    (default: '1')
+    (an integer)
+  --num_units: The number of hidden units
+    (default: '4096')
+    (an integer)
+  --reg_index: index for regularization coefficient
+    (default: '0')
+    (an integer)
+
+absl.flags:
+  --flagfile: Insert flag definitions from the given file into the command line.
+    (default: '')
+  --undefok: comma-separated list of flag names that it is okay to specify on the command line even if the program does not define a flag with that name.  IMPORTANT: flags in this list that have arguments MUST
+    use the --flag=value format.
+    (default: '')
+{'learning_rate': 0.001, 'drop_rate': 0.0, 'reg_index': 0, 'max_batch_size': 10000, 'num_units': 4096, 'num_layers': 1, 'job_id': 47645, 'max_cg_iters': 750, 'max_ncg_iters': 0, 'noise_ind': 9, 'loss': 'square', 'exp_name': 'test', 'model': 'rf', 'dataset': 'SYNTH'}
+=========
+Job ID is 47645
+Regularization adjusted to 0.000010
+The number of parameters is 4097
+Initialized Variables
+Batch Size is 10000
+Optimizer Created
+b vector computed
+9.029477
+Iteration: 0, Curr Error: 2.730218, Min Error: 10000.000000
+Iteration: 30, Curr Error: 1.275558, Min Error: 2.730218
+Iteration: 60, Curr Error: 1.122451, Min Error: 1.275558
+Iteration: 90, Curr Error: 1.068678, Min Error: 1.122451
+Iteration: 120, Curr Error: 1.045136, Min Error: 1.068678
+Iteration: 150, Curr Error: 1.038874, Min Error: 1.045136
+Iteration: 180, Curr Error: 1.036561, Min Error: 1.038874
+Iteration: 210, Curr Error: 1.035316, Min Error: 1.036561
+Iteration: 240, Curr Error: 1.033615, Min Error: 1.035316
+Iteration: 270, Curr Error: 1.033458, Min Error: 1.033615
+Iteration: 300, Curr Error: 1.033430, Min Error: 1.033458
+Iteration: 330, Curr Error: 1.033429, Min Error: 1.033430
+Iteration: 360, Curr Error: 1.033417, Min Error: 1.033429
+Iteration: 390, Curr Error: 1.033399, Min Error: 1.033417
+Iteration: 420, Curr Error: 1.033392, Min Error: 1.033399
+Iteration: 450, Curr Error: 1.033394, Min Error: 1.033392
+Initial CG took 159.677140 seconds
+Loss for the final CG iteration is 1.033394
+Loss after initial CG is 1.033394
+Regularization Loss is 0.000061
+Train loss is 1.033334
+Test loss is 1.712568
+{'learning_rate': 0.001, 'drop_rate': 0.0, 'reg_index': 0, 'max_batch_size': 10000, 'num_units': 4096, 'num_layers': 1, 'job_id': 47645, 'max_cg_iters': 750, 'max_ncg_iters': 0, 'noise_ind': 9, 'loss': 'square', 'exp_name': 'test', 'model': 'rf', 'dataset': 'SYNTH'}

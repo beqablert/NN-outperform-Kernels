@@ -1,0 +1,55 @@
+Arguments:
+
+train.py:
+  --dataset: <NFMNIST|FMNIST|SYNTH|CIFAR2|CIFAR10>: The dataset used for the experiment.
+    (default: 'SYNTH')
+  --drop_rate: Dropout rate
+    (default: '0.0')
+    (a number)
+  --exp_name: The name of the experiment
+    (default: 'test')
+  --job_id: Unique job id assigned by the cluster
+    (default: '-1')
+    (an integer)
+  --learning_rate: Learning rate for SGD
+    (default: '0.001')
+    (a number)
+  --loss: <square|cross_entropy>: The loss used for training the model
+    (default: 'square')
+  --max_batch_size: Maximum allowed batch size
+    (default: '10000')
+    (an integer)
+  --max_cg_iters: Maximum number of CG / SGD iterations
+    (default: '750')
+    (an integer)
+  --max_ncg_iters: Maximum number of ncg iterations
+    (default: '0')
+    (an integer)
+  --model: <2layerNTK|rf|FullyConnected|Myrtle>: The model used for fitting the data
+    (default: 'rf')
+  --noise_ind: Index for the noise added to the data
+    (default: '9')
+    (an integer)
+  --num_layers: The number of layers
+    (default: '1')
+    (an integer)
+  --num_units: The number of hidden units
+    (default: '131072')
+    (an integer)
+  --reg_index: index for regularization coefficient
+    (default: '0')
+    (an integer)
+
+absl.flags:
+  --flagfile: Insert flag definitions from the given file into the command line.
+    (default: '')
+  --undefok: comma-separated list of flag names that it is okay to specify on the command line even if the program does not define a flag with that name.  IMPORTANT: flags in this list that have arguments MUST
+    use the --flag=value format.
+    (default: '')
+{'learning_rate': 0.001, 'drop_rate': 0.0, 'reg_index': 0, 'max_batch_size': 10000, 'num_units': 131072, 'num_layers': 1, 'job_id': 97773, 'max_cg_iters': 750, 'max_ncg_iters': 0, 'noise_ind': 0, 'loss': 'square', 'exp_name': 'test', 'model': 'rf', 'dataset': 'SYNTH'}
+=========
+Job ID is 97773
+Regularization adjusted to 0.000010
+The number of parameters is 131073
+Initialized Variables
+Batch Size is 10000
