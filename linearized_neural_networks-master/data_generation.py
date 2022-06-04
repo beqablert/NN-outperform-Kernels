@@ -93,7 +93,7 @@ def generate_nonuniform_data(n, d, eta, kappa, index):
 
 d = 128
 eta = 2.0 / 5.0
-n = 1024 * 1024
+n = 1000*100
 kappa_mat = np.linspace(0, 1, num=10, endpoint=False)
 
 for index in range(10):

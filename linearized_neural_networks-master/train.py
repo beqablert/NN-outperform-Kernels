@@ -32,8 +32,7 @@ def del_all_flags(FLAGS):
         FLAGS.__delattr__(keys)
 
 os.environ['CUDA_VISIBLE_DEVICES'] = "0"
-print(tf.test.is_gpu_available())
-print(tf.config.list_physical_devices('GPU'))
+# print(tf.config.list_physical_devices('GPU'))
 del_all_flags(flags.FLAGS)
 flags.DEFINE_float('learning_rate', 0.001, 'Learning rate for SGD')
 flags.DEFINE_float('drop_rate', 0.0, 'Dropout rate')
@@ -381,7 +380,8 @@ class Experiment(object):
 		accs = []
 		regLoss = []
 		while epoch < sgd_iters:
-			try:                
+			try:
+				print(epoch)                
 				_, err, acc, regL = sess.run([model._train_op, model._loss, model._accuracy, model._reg_loss],\
 				feed_dict={model._lr: lr_fun(epoch, sgd_iters), model._drop_rate: self._params['dropout']})
 				errs.append(err)
