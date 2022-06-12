@@ -424,7 +424,7 @@ noise_index = 0
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
 
 # for i in range(len(tau)):
-criterion = nn.CrossEntropyLoss()
+criterion = nn.MSELoss()
 # print("Tau={}".format(tau[i]))
 print("Generate Data with noise in high frequencies....")
 # X_train,Y_train,= get_data_with_HF_noise(tau=tau[i],x_train_=x_train_,y_train=y_train)
