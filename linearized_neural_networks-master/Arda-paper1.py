@@ -51,7 +51,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             else: # After "Warm up" increase batch size to 1000!
               train_dl = DataLoader(train_data, batch_size=1000,shuffle=True)
               val_dl = DataLoader(val_data, batch_size=1000,shuffle=True)
-            lr_t = 1e-3 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
+            lr_t = 1e-4 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
             optimizer = optim.SGD(model.parameters(), lr=lr_t, momentum=0.9,weight_decay=l2_reg_NN)
         elif model_name == "RF":
             train_dl = DataLoader(train_data, batch_size=10**4, shuffle=True)
@@ -247,7 +247,7 @@ class NeuralNetwork(nn.Module):
     #self.fc1 = nn.utils.weight_norm(nn.Linear(N, K, bias=False))
     #self.fc2 = nn.utils.weight_norm(nn.Linear(K, 1, bias=False))
     self.fc1 = nn.Linear(128, K*128, bias=False)
-    self.fc2 = nn.Linear(K*128, 1, bias=True)
+    self.fc2 = nn.Linear(K*128, 2, bias=True)
     #torch.nn.init.xavier_uniform_(self.fc2.weight)
     #torch.nn.init.xavier_uniform_(self.fc1.weight)
     nn.init.normal_(self.fc1.weight,std=std)
