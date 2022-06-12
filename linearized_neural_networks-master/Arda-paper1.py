@@ -241,7 +241,7 @@ class NeuralNetwork(nn.Module):
     self.g=nn.ReLU()
     self.soft = nn.Softmax(dim=1)
     self.K=K
-    self.loss=nn.CrossEntropyLoss()
+    self.loss= 
     self.drop = nn.Dropout(p=p)
     #change bias to true
     #self.fc1 = nn.utils.weight_norm(nn.Linear(N, K, bias=False))
@@ -265,6 +265,8 @@ class NeuralNetwork(nn.Module):
     x = self.soft(x)
     return x
 
+def square_loss(y_true, y_pred):
+   return (y_true - y_pred) ** 2
 
 class RF_Network(nn.Module):
     def __init__(self, K, std):
