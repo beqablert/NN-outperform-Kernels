@@ -457,8 +457,8 @@ for i in range(len(tau)):
   for i in range(10):
     for j in range(10):
         print('%d and %d'%(i, j))
-        x1 = X_train[i * m:(i + 1) * m, :]
-        x2 = X_train[j * m:(j + 1) * m, :]
+        x1 = np.ndarray(X_train[i * m:(i + 1) * m, :], np.float32)
+        x2 = np.ndarray(X_train[j * m:(j + 1) * m, :], np.float32)
         kernel[i * m:(i + 1) * m, j * m:(j + 1) * m] = kernel_fn(x1, x2, 'ntk')
   KT = kernel_fn(X_test, X_train, 'ntk')
   RK = kernel + 1e-4 * np.eye(len(Y_train), dtype=np.float32)
