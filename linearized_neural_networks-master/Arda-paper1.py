@@ -241,7 +241,7 @@ class NeuralNetwork(nn.Module):
     self.g=nn.ReLU()
     self.soft = nn.Softmax(dim=1)
     self.K=K
-    self.loss=nn.CrossEntropyLoss()
+    self.loss=nn.MSELoss()
     self.drop = nn.Dropout(p=p)
     #change bias to true
     #self.fc1 = nn.utils.weight_norm(nn.Linear(N, K, bias=False))
