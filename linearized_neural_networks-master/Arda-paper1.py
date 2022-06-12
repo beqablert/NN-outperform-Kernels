@@ -76,6 +76,8 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             x    = batch[0].to(device)
             y    = batch[1].to(device)
             yhat = model(x)
+            print(yhat)
+            print(y)
             loss = loss_fn(yhat, y)
 
             loss.backward()
