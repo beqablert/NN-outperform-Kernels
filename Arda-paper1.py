@@ -150,6 +150,24 @@ class FashionDataset(Dataset):
     def __len__(self):
         return len(self.images)
 
+class SynthDataset(Dataset):
+    """User defined class to build a datset using Pytorch class Dataset."""
+    
+    def __init__(self, X, Y):
+        """Method to initilaize variables.""" 
+        
+        self.Y = Y
+        self.X = X
+
+    def __getitem__(self, index):
+        Y = self.Y[index]
+        X = self.X[index,:]
+        
+        return X, Y
+
+    def __len__(self):
+        return len(self.X)
+
 """#Define 2LNN, RF, NT
 Neural Network (2 Layers)
 """
@@ -228,7 +246,7 @@ class NeuralNetwork(nn.Module):
     #change bias to true
     #self.fc1 = nn.utils.weight_norm(nn.Linear(N, K, bias=False))
     #self.fc2 = nn.utils.weight_norm(nn.Linear(K, 1, bias=False))
-    self.fc1 = nn.Linear(28*28, K, bias=False)
+    self.fc1 = nn.Linear(128*4096, K, bias=False)
     self.fc2 = nn.Linear(K, 10, bias=True)
     #torch.nn.init.xavier_uniform_(self.fc2.weight)
     #torch.nn.init.xavier_uniform_(self.fc1.weight)
@@ -396,33 +414,40 @@ print(device)
 
 #Get and load data into dataloader
 
-(x_train_, y_train), (x_test, y_test) = tf.keras.datasets.fashion_mnist.load_data()
+# (x_train_, y_train), (x_test, y_test) = tf.keras.datasets.fashion_mnist.load_data()
 history_NN_tau = []
 history_RF_tau = []
 history_NT_tau = []
 
-tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
-errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
+noise_index = 0
+# tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
+# errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
 
-for i in range(len(tau)):
-  criterion = nn.CrossEntropyLoss()
-  print("Tau={}".format(tau[i]))
-  print("Generate Data with noise in high frequencies....")
-  X_train,Y_train,= get_data_with_HF_noise(tau=tau[i],x_train_=x_train_,y_train=y_train)
-  X_test,Y_test,= get_data_with_HF_noise(tau=tau[i],x_train_=x_test,y_train=y_test)
-  train_data = FashionDataset(X_train,Y_train)
-  val_data = FashionDataset(X_test,Y_test)
-  #net_NN = NeuralNetwork(K=4096,p=0.2,std=1/math.sqrt(28*28)).to(device)
-  #print("--------- Train Neural Network... ---------")
-  #history_NN = train(
-  #    model = net_NN,
-  #    loss_fn = criterion,
-  #    device=device,
-  #    train_data = train_data,
-  #    val_data = val_data,
-  #    model_name= "NN")
-  #history_NN_tau.append(history_NN["val_acc"])
-  #print("---------- Calculate and Train RF Kernel... ---------")
+# for i in range(len(tau)):
+criterion = nn.CrossEntropyLoss()
+# print("Tau={}".format(tau[i]))
+print("Generate Data with noise in high frequencies....")
+# X_train,Y_train,= get_data_with_HF_noise(tau=tau[i],x_train_=x_train_,y_train=y_train)
+# X_test,Y_test,= get_data_with_HF_noise(tau=tau[i],x_train_=x_test,y_train=y_test)
+# train_data = FashionDataset(X_train,Y_train)
+# val_data = FashionDataset(X_test,Y_test)
+X = np.load('./datasets/synthetic/X_train_anisotropic_128_6_%d.npy'%(noise_index))
+Y = np.load('./datasets/synthetic/y_train_anisotropic_128_6_%d.npy'%(noise_index))	
+YT = np.load('./datasets/synthetic/y_test_anisotropic_128_6_%d.npy'%(noise_index))
+XT = np.load('./datasets/synthetic/X_test_anisotropic_128_6_%d.npy'%(noise_index))
+train_data = SynthDataset(X, Y)
+val_data = SynthDataset(XT, YT)
+net_NN = NeuralNetwork(K=4096,p=0.2,std=1/math.sqrt(28*28)).to(device)
+print("--------- Train Neural Network... ---------")
+history_NN = train(
+    model = net_NN,
+    loss_fn = criterion,
+    device=device,
+    train_data = train_data,
+    val_data = val_data,
+    model_name= "NN")
+history_NN_tau.append(history_NN["val_acc"])
+print("---------- Calculate and Train RF Kernel... ---------")
   #net_RF = RF_Network(K=321126,std=1/math.sqrt(28*28)).to(device)
   #history_RF = train(
   #    model = net_RF,
@@ -432,7 +457,7 @@ for i in range(len(tau)):
   #    val_data = val_data,
   #    model_name="RF")
   #history_RF_tau.append(history_RF["val_acc"])
-  print("-------- Calculate NT Kernel.... ----------")
+#   print("-------- Calculate NT Kernel.... ----------")
 #   net_NT = NT_Network(K=4096,std=1/math.sqrt(28*28)).to(device)
 #   history_NT = train(
 #       model = net_NT,
@@ -447,8 +472,8 @@ for i in range(len(tau)):
 #   print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NT["val_acc"][-1]))
 
 
-  K = NTK2(X_train.T,X_train.T)
-  KT = NTK2(X_test.T,X_train.T)
+#   K = NTK2(X_train.T,X_train.T)
+#   KT = NTK2(X_test.T,X_train.T)
 #   init_fn, apply_fn, kernel_fn = stax.serial(stax.Dense(512), stax.Relu(), stax.Dense(1))
 #   n = X_train.shape[0]
 #   kernel = np.zeros((n, n), dtype=np.float32)
@@ -462,26 +487,26 @@ for i in range(len(tau)):
 # #         x2 = np.ndarray(X_train[j * m:(j + 1) * m, :], np.float32)
 # #         kernel[i * m:(i + 1) * m, j * m:(j + 1) * m] = kernel_fn(x1, x2, 'ntk')
 #   KT = kernel_fn(X_test, X_train, 'ntk')
-  RK = K + 1e-4 * np.eye(len(Y_train), dtype=np.float32)
-  print(RK.shape)
-  cg = ss.cg(RK, Y_train, maxiter=400, atol=1e-4, tol=1e-4)
-  sol = np.copy(cg[0]).reshape((len(Y_train), 1))
-  yhat = np.dot(K, sol)
-  preds = np.dot(KT, sol)
-  print(preds.shape)
-  errors_RF[i, 0] = np.linalg.norm(Y_train - yhat) ** 2 / (len(Y_train) + 0.0)
-  errors_RF[i, 2] = np.linalg.norm(Y_test - preds) ** 2 / (len(Y_test) + 0.0)
-  errors_RF[i, 1] = compute_accuracy(Y_train, yhat)
-  errors_RF[i, 3] = compute_accuracy(Y_test, preds)
-  print('Training Error Random Features is'.format(errors_RF[i, 0]))
-  print('Test Error Random Features is'.format(errors_RF[i, 2]))
-  print('Training Accuracy Random Features is'.format(errors_RF[i, 1]))
+#   RK = K + 1e-4 * np.eye(len(Y_train), dtype=np.float32)
+#   print(RK.shape)
+#   cg = ss.cg(RK, Y_train, maxiter=400, atol=1e-4, tol=1e-4)
+#   sol = np.copy(cg[0]).reshape((len(Y_train), 1))
+#   yhat = np.dot(K, sol)
+#   preds = np.dot(KT, sol)
+#   print(preds.shape)
+#   errors_RF[i, 0] = np.linalg.norm(Y_train - yhat) ** 2 / (len(Y_train) + 0.0)
+#   errors_RF[i, 2] = np.linalg.norm(Y_test - preds) ** 2 / (len(Y_test) + 0.0)
+#   errors_RF[i, 1] = compute_accuracy(Y_train, yhat)
+#   errors_RF[i, 3] = compute_accuracy(Y_test, preds)
+#   print('Training Error Random Features is'.format(errors_RF[i, 0]))
+#   print('Test Error Random Features is'.format(errors_RF[i, 2]))
+#   print('Training Accuracy Random Features is'.format(errors_RF[i, 1]))
 
-with open('/home/apdl007/Paper1/NN_val_acc_taus.txt', 'w') as f:
+with open('/home/apdl008/Paper1/NN_val_acc_taus.txt', 'w') as f:
     np.savetxt(f, history_NN_tau)
-with open('/home/apdl007/Paper1/RF_val_acc_taus.txt', 'w') as f:
+with open('/home/apdl008/Paper1/RF_val_acc_taus.txt', 'w') as f:
     np.savetxt(f, history_RF_tau)
-with open('/home/apdl007/Paper1/NT_val_acc_taus.txt', 'w') as f:
+with open('/home/apdl008/Paper1/NT_val_acc_taus.txt', 'w') as f:
         np.savetxt(f, history_NT_tau)
 
 print("Results saved. Bye!")
