@@ -248,8 +248,8 @@ class NeuralNetwork(nn.Module):
     #change bias to true
     #self.fc1 = nn.utils.weight_norm(nn.Linear(N, K, bias=False))
     #self.fc2 = nn.utils.weight_norm(nn.Linear(K, 1, bias=False))
-    self.fc1 = nn.Linear(128, 128*128, bias=False)
-    self.fc2 = nn.Linear(128*128, 1, bias=True)
+    self.fc1 = nn.Linear(128, K*128, bias=False)
+    self.fc2 = nn.Linear(K*128, K, bias=True)
     #torch.nn.init.xavier_uniform_(self.fc2.weight)
     #torch.nn.init.xavier_uniform_(self.fc1.weight)
     nn.init.normal_(self.fc1.weight,std=std)
