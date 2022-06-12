@@ -463,6 +463,7 @@ for i in range(len(tau)):
 # #         kernel[i * m:(i + 1) * m, j * m:(j + 1) * m] = kernel_fn(x1, x2, 'ntk')
 #   KT = kernel_fn(X_test, X_train, 'ntk')
   RK = K + 1e-4 * np.eye(len(Y_train), dtype=np.float32)
+  print(RK.shape)
   cg = ss.cg(RK, Y_train, maxiter=400, atol=1e-4, tol=1e-4)
   sol = np.copy(cg[0]).reshape((len(Y_train), 1))
   yhat = np.dot(K, sol)
