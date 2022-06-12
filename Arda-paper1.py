@@ -447,24 +447,25 @@ for i in range(len(tau)):
 #   print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NT["val_acc"][-1]))
 
 
-#   K = NTK2(X_train.T,X_train.T)
-#   KT = NTK2(X_test.T,X_train.T)
-  init_fn, apply_fn, kernel_fn = stax.serial(stax.Dense(512), stax.Relu(), stax.Dense(1))
-  n = X_train.shape[0]
-  kernel = np.zeros((n, n), dtype=np.float32)
-  m = n / 10
-  m = np.int(m)
-  for i in range(10):
-    for j in range(10):
-        print('%d and %d'%(i, j))
-        x1 = np.ndarray(X_train[i * m:(i + 1) * m, :], np.float32)
-        x2 = np.ndarray(X_train[j * m:(j + 1) * m, :], np.float32)
-        kernel[i * m:(i + 1) * m, j * m:(j + 1) * m] = kernel_fn(x1, x2, 'ntk')
-  KT = kernel_fn(X_test, X_train, 'ntk')
-  RK = kernel + 1e-4 * np.eye(len(Y_train), dtype=np.float32)
+  K = NTK2(X_train.T,X_train.T)
+  KT = NTK2(X_test.T,X_train.T)
+#   init_fn, apply_fn, kernel_fn = stax.serial(stax.Dense(512), stax.Relu(), stax.Dense(1))
+#   n = X_train.shape[0]
+#   kernel = np.zeros((n, n), dtype=np.float32)
+#   m = n / 10
+#   m = np.int(m)
+#   kernel = kernel_fn(X_train)
+# #   for i in range(10):
+# #     for j in range(10):
+# #         print('%d and %d'%(i, j))
+# #         x1 = np.ndarray(X_train[i * m:(i + 1) * m, :], np.float32)
+# #         x2 = np.ndarray(X_train[j * m:(j + 1) * m, :], np.float32)
+# #         kernel[i * m:(i + 1) * m, j * m:(j + 1) * m] = kernel_fn(x1, x2, 'ntk')
+#   KT = kernel_fn(X_test, X_train, 'ntk')
+  RK = K + 1e-4 * np.eye(len(Y_train), dtype=np.float32)
   cg = ss.cg(RK, Y_train, maxiter=400, atol=1e-4, tol=1e-4)
   sol = np.copy(cg[0]).reshape((len(Y_train), 1))
-  yhat = np.dot(kernel, sol)
+  yhat = np.dot(K, sol)
   preds = np.dot(KT, sol)
   print(preds.shape)
   errors_RF[i, 0] = np.linalg.norm(Y_train - yhat) ** 2 / (len(Y_train) + 0.0)
