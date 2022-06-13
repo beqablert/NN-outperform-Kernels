@@ -83,7 +83,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             loss.backward()
             optimizer.step()
 
-            train_loss         += loss.data.item() * x.size[0]
+            train_loss         += loss.data.item() * x.size(0)
             num_train_correct  += (torch.max(yhat, 1)[1] == y).sum().item()
             num_train_examples += x.shape[0]
 
