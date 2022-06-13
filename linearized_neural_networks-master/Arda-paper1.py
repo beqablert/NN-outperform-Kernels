@@ -101,8 +101,8 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             x    = batch[0].to(device)
             y    = batch[1].to(device)
             yhat = model(x)
-            yhat_norm = (torch.linalg.norm(yhat, dim=0, ord=2)) / len(val_dl.dataset)
-            y_norm = (torch.linalg.norm(y, dim=0, ord=2))/ len(val_dl.dataset)
+            yhat_norm = (torch.linalg.norm(yhat, dim=0, ord=2))
+            y_norm = (torch.linalg.norm(y, dim=0, ord=2))
             loss = loss_fn(yhat/yhat_norm, y/y_norm)
 
             val_loss         += loss.data.item() * x.size(0)
