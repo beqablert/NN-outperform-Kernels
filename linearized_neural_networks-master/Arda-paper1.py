@@ -348,7 +348,7 @@ class NT_Network(nn.Module):
     def forward(self, x):
         # input to hidden
         x_ = x
-        z = self.fc1(x)
+        z = self.fc1(x)/math.sqrt(self.K)
         q = self.g(z)
         RF = self.fc2(q)
         zero_one_mat = 0.5 * (torch.sign(z) + 1.0)
@@ -483,7 +483,7 @@ val_data = SynthDataset(XT, YT)
 # history_RF_tau_val.append(history_RF["val_acc"])
 # history_RF_tau.append(history_RF["plot_val"])
 print("-------- Calculate NT Kernel.... ----------")
-net_NT = NT_Network(K=4096,std=1/math.sqrt(28*28)).to(device)
+net_NT = NT_Network(K=160,std=1/math.sqrt(256)).to(device)
 history_NT = train(
     model = net_NT,
     loss_fn = criterion,
