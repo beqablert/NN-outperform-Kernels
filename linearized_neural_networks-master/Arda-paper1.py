@@ -122,7 +122,8 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         history['val_loss'].append(val_loss)
         history['acc'].append(train_acc)
         history['val_acc'].append(val_acc)
-        history['plot_val'].append((val_loss - (torch.linalg.norm(y, dim=0, ord=2) ** 2)/len(val_dl.dataset))/((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset)))
+        plot_val = (val_loss - (torch.linalg.norm(y, dim=0, ord=2) ** 2)/len(val_dl.dataset))/((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset))
+        history['plot_val'].append(plot_val)
 
         if epoch == 1 or epoch % 10 == 0: #show progress every 10 epochs
           with open('/home/apdl008/Paper1/NN_val_acc_taus.txt', 'x') as f:
