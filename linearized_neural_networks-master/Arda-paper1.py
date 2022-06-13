@@ -448,7 +448,7 @@ print(Y.shape[1])
 print(Y[0])
 train_data = SynthDataset(X, Y)
 val_data = SynthDataset(XT, YT)
-net_NN = NeuralNetwork(K=4096,p=0.0,std=1/math.sqrt(128)).to(device)
+net_NN = NeuralNetwork(K=1024,p=0.0,std=1/math.sqrt(128)).to(device)
 print("--------- Train Neural Network... ---------")
 history_NN = train(
     model = net_NN,
