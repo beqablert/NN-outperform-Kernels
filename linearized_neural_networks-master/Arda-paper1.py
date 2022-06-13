@@ -264,9 +264,9 @@ class NeuralNetwork(nn.Module):
 
   def forward(self, x):
     # input to hidden
-    x=self.fc1(x)/math.sqrt(128)
+    x=self.fc1(x)/math.sqrt(1024)
     x=self.g(x)
-    x = self.fc2(x)/math.sqrt(128)
+    x = self.fc2(x)
     x = self.drop(x)
     # x = self.soft(x)
     return x
