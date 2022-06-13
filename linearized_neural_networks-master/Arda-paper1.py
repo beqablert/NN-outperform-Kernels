@@ -285,18 +285,18 @@ class RF_Network(nn.Module):
         self.g = nn.ReLU()
         self.soft = nn.Softmax(dim=1)
         self.K = K
-        self.loss = nn.CrossEntropyLoss()
+        self.loss = square_loss
         #First layer weights are fixed!
-        self.w = np.random.randn(28*28,K)
+        self.w = np.random.randn(256,K)
         norm = np.linalg.norm(self.w,axis=0,keepdims=True)
         self.w = self.w/norm
         self.w = torch.from_numpy(self.w)
         self.w = self.w.float()
         self.w = self.w.cuda()
         self.w = self.w.T
-        self.fc1 = nn.Linear(28 * 28, K, bias=False)
+        self.fc1 = nn.Linear(256, K, bias=True)
         self.fc1.weight = nn.Parameter(self.w, requires_grad=False)  # Fix initialized weight
-        self.fc2 = nn.Linear(K, 10, bias=True)
+        self.fc2 = nn.Linear(K, 1, bias=True)
         nn.init.normal_(self.fc2.weight, std=std)
 
 
@@ -305,7 +305,7 @@ class RF_Network(nn.Module):
         x = self.fc1(x)
         x = self.g(x)
         x = self.fc2(x)
-        x = self.soft(x)
+        # x = self.soft(x)
         return x
 
 
@@ -448,27 +448,27 @@ print(Y.shape[1])
 print(Y[0])
 train_data = SynthDataset(X, Y)
 val_data = SynthDataset(XT, YT)
-net_NN = NeuralNetwork(K=128,p=0.2,std=1/math.sqrt(256)).to(device)
-print("--------- Train Neural Network... ---------")
-history_NN = train(
-    model = net_NN,
+# net_NN = NeuralNetwork(K=128,p=0.2,std=1/math.sqrt(256)).to(device)
+# print("--------- Train Neural Network... ---------")
+# history_NN = train(
+#     model = net_NN,
+#     loss_fn = criterion,
+#     device=device,
+#     train_data = train_data,
+#     val_data = val_data,
+#     model_name= "NN")
+# history_NN_tau.append(history_NN["val_acc"])
+print("---------- Calculate and Train RF Kernel... ---------")
+net_RF = RF_Network(K=10000,std=1/math.sqrt(256)).to(device)
+history_RF = train(
+    model = net_RF,
     loss_fn = criterion,
     device=device,
     train_data = train_data,
     val_data = val_data,
-    model_name= "NN")
-history_NN_tau.append(history_NN["val_acc"])
-print("---------- Calculate and Train RF Kernel... ---------")
-  #net_RF = RF_Network(K=321126,std=1/math.sqrt(28*28)).to(device)
-  #history_RF = train(
-  #    model = net_RF,
-  #    loss_fn = criterion,
-  #    device=device,
-  #    train_data = train_data,
-  #    val_data = val_data,
-  #    model_name="RF")
-  #history_RF_tau.append(history_RF["val_acc"])
-#   print("-------- Calculate NT Kernel.... ----------")
+    model_name="RF")
+history_RF_tau.append(history_RF["val_acc"])
+print("-------- Calculate NT Kernel.... ----------")
 #   net_NT = NT_Network(K=4096,std=1/math.sqrt(28*28)).to(device)
 #   history_NT = train(
 #       model = net_NT,
