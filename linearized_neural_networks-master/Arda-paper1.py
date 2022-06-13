@@ -79,7 +79,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             # print(yhat)
             # print(y)
             loss = loss_fn(yhat, y)
-            print(loss)
+            # print(loss)
             loss.backward()
             optimizer.step()
 
