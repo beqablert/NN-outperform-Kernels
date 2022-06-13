@@ -79,11 +79,11 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             # print(yhat)
             # print(y)
             loss = loss_fn(yhat, y)
-
+            print(loss)
             loss.backward()
             optimizer.step()
 
-            train_loss         += loss.data.item() * x.size(0)
+            train_loss         += loss.data.item() 
             num_train_correct  += (torch.max(yhat, 1)[1] == y).sum().item()
             num_train_examples += x.shape[0]
 
@@ -103,7 +103,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             yhat = model(x)
             loss = loss_fn(yhat, y)
 
-            val_loss         += loss.data.item() * x.size(0)
+            val_loss         += loss.data.item()
             adjusted_labels = torch.sign(y - torch.mean(y))
             adjusted_predictions = torch.sign(yhat - torch.mean(yhat))
             # print(adjusted_labels[0])
