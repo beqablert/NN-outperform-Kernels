@@ -459,28 +459,28 @@ print(Y.shape[1])
 print(Y[0])
 train_data = SynthDataset(X, Y)
 val_data = SynthDataset(XT, YT)
-net_NN = NeuralNetwork(K=160,p=0.2,std=1/math.sqrt(256)).to(device)
-print("--------- Train Neural Network... ---------")
-history_NN = train(
-    model = net_NN,
-    loss_fn = criterion,
-    device=device,
-    train_data = train_data,
-    val_data = val_data,
-    model_name= "NN")
-history_NN_tau.append(history_NN["val_acc"])
-history_NN_tau_val.append(history_NN["plot_val"])
-print("---------- Calculate and Train RF Kernel... ---------")
-# net_RF = RF_Network(K=10000,std=1/math.sqrt(256)).to(device)
-# history_RF = train(
-#     model = net_RF,
+# net_NN = NeuralNetwork(K=160,p=0.2,std=1/math.sqrt(256)).to(device)
+# print("--------- Train Neural Network... ---------")
+# history_NN = train(
+#     model = net_NN,
 #     loss_fn = criterion,
 #     device=device,
 #     train_data = train_data,
 #     val_data = val_data,
-#     model_name="RF")
-# history_RF_tau_val.append(history_RF["val_acc"])
-# history_RF_tau.append(history_RF["plot_val"])
+#     model_name= "NN")
+# history_NN_tau.append(history_NN["val_acc"])
+# history_NN_tau_val.append(history_NN["plot_val"])
+print("---------- Calculate and Train RF Kernel... ---------")
+net_RF = RF_Network(K=10000,std=1/math.sqrt(256)).to(device)
+history_RF = train(
+    model = net_RF,
+    loss_fn = criterion,
+    device=device,
+    train_data = train_data,
+    val_data = val_data,
+    model_name="RF")
+history_RF_tau_val.append(history_RF["val_acc"])
+history_RF_tau.append(history_RF["plot_val"])
 print("-------- Calculate NT Kernel.... ----------")
 #   net_NT = NT_Network(K=4096,std=1/math.sqrt(28*28)).to(device)
 #   history_NT = train(
