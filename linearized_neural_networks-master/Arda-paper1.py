@@ -272,7 +272,7 @@ class NeuralNetwork(nn.Module):
     return x
 
 def square_loss(y_true, y_pred):
-   return (y_true - y_pred) ** 2
+   return tf.reduce_mean((y_true - y_pred) ** 2)
 
 class RF_Network(nn.Module):
     def __init__(self, K, std):
