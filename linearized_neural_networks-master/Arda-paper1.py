@@ -326,24 +326,24 @@ class NT_Network(nn.Module):
         print("Creating a Neural Network ")
         super(NT_Network, self).__init__()
 
-        self.a0 = (torch.randn(1,10,K)).cuda()
+        self.a0 = (torch.randn(1,1,K)).cuda()
         self.g = nn.ReLU()
         self.soft = nn.Softmax(dim=1)
         self.K = K
-        self.loss = nn.CrossEntropyLoss()
+        self.loss = square_loss
         #First layer weights are fixed!
-        self.w = np.random.randn(28*28,K)
+        self.w = np.random.randn(256,K)
         norm = np.linalg.norm(self.w,axis=0,keepdims=True)
         self.w = self.w/norm
         self.w = torch.from_numpy(self.w)
         self.w = self.w.float()
         self.w = self.w.cuda()
         self.w = self.w.T
-        self.fc1 = nn.Linear(28 * 28, K, bias=False)
+        self.fc1 = nn.Linear(256, K, bias=False)
         self.fc1.weight = nn.Parameter(self.w, requires_grad=False)  # Fix initialized weight
-        self.fc2 = nn.Linear(K, 10, bias=True)
+        self.fc2 = nn.Linear(K, 1, bias=True)
         nn.init.normal_(self.fc2.weight, std=std)
-        self.G = (torch.randn(K,28*28)).cuda()
+        self.G = (torch.randn(K,256)).cuda()
 
     def forward(self, x):
         # input to hidden
@@ -363,7 +363,7 @@ class NT_Network(nn.Module):
         x = NT + RF
         #x = torch.tensor(x)
         #x = x.cuda()
-        x = self.soft(x)
+        # x = self.soft(x)
         return x
 
 """# Generate FMNIST data with noise in high frequencies
@@ -438,7 +438,7 @@ history_NT_tau = []
 history_RF_tau_val = []
 history_NN_tau_val = []
 
-noise_index = 1
+noise_index = 0
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
 
