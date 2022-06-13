@@ -264,7 +264,7 @@ class NeuralNetwork(nn.Module):
 
   def forward(self, x):
     # input to hidden
-    x=self.fc1(x)/math.sqrt(1024)
+    x=self.fc1(x)/math.sqrt(self.K)
     x=self.g(x)
     x = self.fc2(x)
     x = self.drop(x)
@@ -448,7 +448,7 @@ print(Y.shape[1])
 print(Y[0])
 train_data = SynthDataset(X, Y)
 val_data = SynthDataset(XT, YT)
-net_NN = NeuralNetwork(K=1024,p=0.2,std=1/math.sqrt(256)).to(device)
+net_NN = NeuralNetwork(K=128,p=0.2,std=1/math.sqrt(256)).to(device)
 print("--------- Train Neural Network... ---------")
 history_NN = train(
     model = net_NN,
