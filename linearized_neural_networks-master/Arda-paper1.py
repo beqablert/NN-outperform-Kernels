@@ -83,7 +83,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             loss.backward()
             optimizer.step()
 
-            train_loss         += loss.data.item() 
+            train_loss         += loss.data.item() * x.size[0]
             num_train_correct  += (torch.max(yhat, 1)[1] == y).sum().item()
             num_train_examples += x.shape[0]
 
@@ -103,7 +103,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             yhat = model(x)
             loss = loss_fn(yhat, y)
 
-            val_loss         += loss.data.item()
+            val_loss         += loss.data.item() * x.size(0)
             adjusted_labels = torch.sign(y - torch.mean(y))
             adjusted_predictions = torch.sign(yhat - torch.mean(yhat))
             # print(adjusted_labels[0])
@@ -264,9 +264,9 @@ class NeuralNetwork(nn.Module):
 
   def forward(self, x):
     # input to hidden
-    x=self.fc1(x)/math.sqrt(2)
+    x=self.fc1(x)/math.sqrt(128)
     x=self.g(x)
-    x = self.fc2(x) #/math.sqrt(128)
+    x = self.fc2(x)/math.sqrt(128)
     x = self.drop(x)
     # x = self.soft(x)
     return x
