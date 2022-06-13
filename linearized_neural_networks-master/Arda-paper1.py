@@ -118,7 +118,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         if epoch == 1 or epoch % 10 == 0: #show progress every 10 epochs
           print('Epoch %3d/%3d, train loss: %5.2f, train acc: %5.2f, val loss: %5.2f, val acc: %5.2f' % \
                 (epoch, epochs, train_loss, train_acc, val_loss, val_acc))
-          print((torch.linalg.norm(yhat, dim=1, ord=2) ** 2))      
+          print((torch.linalg.norm(yhat, dim=0, ord=2) ** 2))      
 
         history['loss'].append(train_loss)
         history['val_loss'].append(val_loss)
@@ -303,7 +303,7 @@ class RF_Network(nn.Module):
 
     def forward(self, x):
         # input to hidden
-        x = self.fc1(x)/math.sqrt(256)
+        x = self.fc1(x)
         x = self.g(x)
         x = self.fc2(x)
         # x = self.soft(x)
