@@ -358,7 +358,7 @@ class NT_Network(nn.Module):
         q2 = torch.tensordot(U,self.G,dims=([2],[0]))
         temp = torch.unsqueeze(x_, 2)
         aux_data = temp.reshape((temp.shape[0],1,temp.shape[1]))  # bs x 1 x d
-        temp = torch.multiply(q2, aux_data)
+        temp = torch.multiply(q2, aux_data)/math.sqrt(self.K)
         NT = temp.sum(2)  # bs x num_class
         x = NT + RF
         #x = torch.tensor(x)
