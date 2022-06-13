@@ -117,18 +117,9 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             num_val_examples += y.shape[0]
 
         val_acc  = num_val_correct / num_val_examples
-        val_loss = val_loss / len(val_dl.dataset)
-
-        history['loss'].append(train_loss)
-        history['val_loss'].append(val_loss)
-        history['acc'].append(train_acc)
-        history['val_acc'].append(val_acc)
-        plot_val = (val_loss - (torch.linalg.norm(y, dim=0, ord=2) ** 2)/len(val_dl.dataset))/((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset))
-        history['plot_val'].append(plot_val)
+        val_loss = val_loss / len(val_dl.dataset)        
 
         if epoch == 1 or epoch % 10 == 0: #show progress every 10 epochs
-          with open('./results/NN_results.txt', 'w') as f:
-            np.savetxt(f, history)
           print('Epoch %3d/%3d, train loss: %5.2f, train acc: %5.2f, val loss: %5.2f, val acc: %5.2f' % \
                 (epoch, epochs, train_loss, train_acc, val_loss, val_acc))
           print((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset))
@@ -139,6 +130,8 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         history['val_loss'].append(val_loss)
         history['acc'].append(train_acc)
         history['val_acc'].append(val_acc)
+        plot_val = (val_loss - (np.linalg.norm(torch.Tensor.cpu(y).detach().numpy(), 2) ** 2)/len(val_dl.dataset))/((np.linalg.norm(torch.Tensor.cpu(yhat).detach().numpy(), 2) ** 2)/len(val_dl.dataset))
+        history['plot_val'].append(plot_val)
 
     # END OF TRAINING LOOP
 
@@ -442,6 +435,7 @@ print(device)
 history_NN_tau = []
 history_RF_tau = []
 history_NT_tau = []
+history_RF_tau_val = []
 
 noise_index = 2
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
@@ -483,7 +477,8 @@ history_RF = train(
     train_data = train_data,
     val_data = val_data,
     model_name="RF")
-history_RF_tau.append(history_RF["val_acc"])
+history_RF_tau_val.append(history_RF["val_acc"])
+history_RF_tau.append(history_RF["plot_val"])
 print("-------- Calculate NT Kernel.... ----------")
 #   net_NT = NT_Network(K=4096,std=1/math.sqrt(28*28)).to(device)
 #   history_NT = train(
@@ -529,11 +524,17 @@ print("-------- Calculate NT Kernel.... ----------")
 #   print('Test Error Random Features is'.format(errors_RF[i, 2]))
 #   print('Training Accuracy Random Features is'.format(errors_RF[i, 1]))
 
-with open('/home/apdl008/Paper1/NN_val_acc_taus.txt', 'w') as f:
-    np.savetxt(f, history_NN_tau)
-with open('/home/apdl008/Paper1/RF_val_acc_taus.txt', 'w') as f:
-    np.savetxt(f, history_RF_tau)
-with open('/home/apdl008/Paper1/NT_val_acc_taus.txt', 'w') as f:
-        np.savetxt(f, history_NT_tau)
+# with open('/home/apdl008/Paper1/NN_val_acc_taus.txt', 'w') as f:
+#     np.savetxt(f, history_NN_tau)
+# with open('/home/apdl008/Paper1/RF_val_acc_taus.txt', 'w') as f:
+#     np.savetxt(f, history_RF_tau)
+# with open('/home/apdl008/Paper1/NT_val_acc_taus.txt', 'w') as f:
+#         np.savetxt(f, history_NT_tau)
+
+with open('./results/RF_results.txt', 'w') as f:
+            np.savetxt(f, history_RF_tau)
+            
+with open('./results/RF_results_val_acc.txt', 'w') as f:
+            np.savetxt(f, history_RF_tau_val)            
 
 print("Results saved. Bye!")
