@@ -437,6 +437,7 @@ history_RF_tau = []
 history_NT_tau = []
 history_RF_tau_val = []
 history_NN_tau_val = []
+history_NT_tau_val = []
 
 noise_index = 0
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
@@ -470,27 +471,28 @@ val_data = SynthDataset(XT, YT)
 #     model_name= "NN")
 # history_NN_tau.append(history_NN["val_acc"])
 # history_NN_tau_val.append(history_NN["plot_val"])
-print("---------- Calculate and Train RF Kernel... ---------")
-net_RF = RF_Network(K=10000,std=1/math.sqrt(256)).to(device)
-history_RF = train(
-    model = net_RF,
+# print("---------- Calculate and Train RF Kernel... ---------")
+# net_RF = RF_Network(K=10000,std=1/math.sqrt(256)).to(device)
+# history_RF = train(
+#     model = net_RF,
+#     loss_fn = criterion,
+#     device=device,
+#     train_data = train_data,
+#     val_data = val_data,
+#     model_name="RF")
+# history_RF_tau_val.append(history_RF["val_acc"])
+# history_RF_tau.append(history_RF["plot_val"])
+print("-------- Calculate NT Kernel.... ----------")
+net_NT = NT_Network(K=4096,std=1/math.sqrt(28*28)).to(device)
+history_NT = train(
+    model = net_NT,
     loss_fn = criterion,
     device=device,
     train_data = train_data,
     val_data = val_data,
-    model_name="RF")
-history_RF_tau_val.append(history_RF["val_acc"])
-history_RF_tau.append(history_RF["plot_val"])
-print("-------- Calculate NT Kernel.... ----------")
-#   net_NT = NT_Network(K=4096,std=1/math.sqrt(28*28)).to(device)
-#   history_NT = train(
-#       model = net_NT,
-#       loss_fn = criterion,
-#       device=device,
-#       train_data = train_data,
-#       val_data = val_data,
-#       model_name="NT")
-#   history_NT_tau.append(history_NT["val_acc"])
+    model_name="NT")
+history_NT_tau.append(history_NT["val_acc"])
+history_NT_tau.append(history_NT["plot_val"])
   #print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NN["val_acc"][-1]))
   #print("Test Accuracy of Random Features for tau = {} is {}".format(tau[i], history_RF["val_acc"][-1]))
 #   print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NT["val_acc"][-1]))
