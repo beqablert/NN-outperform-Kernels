@@ -124,7 +124,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
                 (epoch, epochs, train_loss, train_acc, val_loss, val_acc))
           print((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset))
           print((torch.linalg.norm(y, dim=0, ord=2) ** 2)/len(val_dl.dataset))
-          print(val_loss/((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset) + (torch.linalg.norm(y, dim=0, ord=2) ** 2)/len(val_dl.dataset)))      
+          print((val_loss - (torch.linalg.norm(y, dim=0, ord=2) ** 2)/len(val_dl.dataset))/((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset)))      
 
         history['loss'].append(train_loss)
         history['val_loss'].append(val_loss)
