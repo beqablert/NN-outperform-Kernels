@@ -101,13 +101,17 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             x    = batch[0].to(device)
             y    = batch[1].to(device)
             yhat = model(x)
-            loss = loss_fn(yhat, y)
+            yhat_norm = (torch.linalg.norm(yhat, dim=0, ord=2)) / len(val_dl.dataset)
+            y_norm = (torch.linalg.norm(y, dim=0, ord=2))/ len(val_dl.dataset)
+            loss = loss_fn(yhat/yhat_norm, y/y_norm)
 
             val_loss         += loss.data.item() * x.size(0)
             adjusted_labels = torch.sign(y - torch.mean(y))
             adjusted_predictions = torch.sign(yhat - torch.mean(yhat))
             # print(adjusted_labels[0])
             # print(adjusted_predictions[0])
+            # yhat_norm = (torch.linalg.norm(yhat, dim=0, ord=2) ** 2) / len(val_dl.dataset)
+            # y_norm = (torch.linalg.norm(y, dim=0, ord=2) ** 2)/ len(val_dl.dataset)
             num_val_correct  += torch.eq(adjusted_predictions, adjusted_labels).sum()
             num_val_examples += y.shape[0]
 
