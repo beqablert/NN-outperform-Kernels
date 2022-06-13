@@ -51,7 +51,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             else: # After "Warm up" increase batch size to 1000!
               train_dl = DataLoader(train_data, batch_size=1000,shuffle=True)
               val_dl = DataLoader(val_data, batch_size=1000,shuffle=True)
-            lr_t = 1e-4 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
+            lr_t = 1e-3 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
             optimizer = optim.SGD(model.parameters(), lr=lr_t, momentum=0.9,weight_decay=l2_reg_NN)
         elif model_name == "RF":
             train_dl = DataLoader(train_data, batch_size=10**4, shuffle=True)
@@ -76,8 +76,8 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             x    = batch[0].to(device)
             y    = batch[1].to(device)
             yhat = model(x)
-            print(yhat)
-            print(y)
+            # print(yhat)
+            # print(y)
             loss = loss_fn(yhat, y)
 
             loss.backward()
@@ -104,7 +104,11 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             loss = loss_fn(yhat, y)
 
             val_loss         += loss.data.item() * x.size(0)
-            num_val_correct  += (torch.max(yhat, 1)[1] == y).sum().item()
+            adjusted_labels = torch.sign(y - torch.mean(y))
+            adjusted_predictions = torch.sign(yhat - torch.mean(yhat))
+            # print(adjusted_labels[0])
+            # print(adjusted_predictions[0])
+            num_val_correct  += torch.eq(adjusted_predictions, adjusted_labels).sum()
             num_val_examples += y.shape[0]
 
         val_acc  = num_val_correct / num_val_examples
@@ -248,8 +252,8 @@ class NeuralNetwork(nn.Module):
     #change bias to true
     #self.fc1 = nn.utils.weight_norm(nn.Linear(N, K, bias=False))
     #self.fc2 = nn.utils.weight_norm(nn.Linear(K, 1, bias=False))
-    self.fc1 = nn.Linear(128, K*128, bias=False)
-    self.fc2 = nn.Linear(K*128, K, bias=True)
+    self.fc1 = nn.Linear(128, 128*128, bias=True)
+    self.fc2 = nn.Linear(128*128, 1, bias=True)
     #torch.nn.init.xavier_uniform_(self.fc2.weight)
     #torch.nn.init.xavier_uniform_(self.fc1.weight)
     nn.init.normal_(self.fc1.weight,std=std)
@@ -260,11 +264,11 @@ class NeuralNetwork(nn.Module):
 
   def forward(self, x):
     # input to hidden
-    x=self.fc1(x) #/math.sqrt(self.K)
+    x=self.fc1(x)/math.sqrt(128)
     x=self.g(x)
-    x = self.fc2(x) #/math.sqrt(self.K)
+    x = self.fc2(x) #/math.sqrt(128)
     x = self.drop(x)
-    x = self.soft(x)
+    # x = self.soft(x)
     return x
 
 def square_loss(y_true, y_pred):
@@ -439,9 +443,12 @@ X = np.load('./datasets/synthetic/X_train_anisotropic_128_6_%d.npy'%(noise_index
 Y = np.load('./datasets/synthetic/y_train_anisotropic_128_6_%d.npy'%(noise_index))	
 YT = np.load('./datasets/synthetic/y_test_anisotropic_128_6_%d.npy'%(noise_index))
 XT = np.load('./datasets/synthetic/X_test_anisotropic_128_6_%d.npy'%(noise_index))
+print(Y.shape[0])
+print(Y.shape[1])
+print(Y[0])
 train_data = SynthDataset(X, Y)
 val_data = SynthDataset(XT, YT)
-net_NN = NeuralNetwork(K=4096,p=0.2,std=1/math.sqrt(28*28)).to(device)
+net_NN = NeuralNetwork(K=4096,p=0.0,std=1/math.sqrt(128)).to(device)
 print("--------- Train Neural Network... ---------")
 history_NN = train(
     model = net_NN,
