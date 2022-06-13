@@ -37,6 +37,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
     history['val_loss'] = []
     history['acc'] = []
     history['val_acc'] = []
+    history['plot_val'] = []
 
     start_time_sec = time.time()
     #l2_reg = np.logscale(-6,-2,20) #they used a grid for l2 but we keep it simple for now
