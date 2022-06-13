@@ -101,9 +101,9 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             x    = batch[0].to(device)
             y    = batch[1].to(device)
             yhat = model(x)
-            yhat_norm = (torch.linalg.norm(yhat, dim=0, ord=2))/(yhat.size(0))
-            y_norm = (torch.linalg.norm(y, dim=0, ord=2))/(y.size(0))
-            loss = loss_fn(yhat/yhat_norm, y/y_norm)
+            # yhat_norm = (torch.linalg.norm(yhat, dim=0, ord=2))/(yhat.size(0))
+            # y_norm = (torch.linalg.norm(y, dim=0, ord=2))/(y.size(0))
+            loss = loss_fn(yhat, y)
 
             val_loss         += loss.data.item() * x.size(0)
             adjusted_labels = torch.sign(y - torch.mean(y))
@@ -123,7 +123,8 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
           print('Epoch %3d/%3d, train loss: %5.2f, train acc: %5.2f, val loss: %5.2f, val acc: %5.2f' % \
                 (epoch, epochs, train_loss, train_acc, val_loss, val_acc))
           print((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset))
-          print((torch.linalg.norm(y, dim=0, ord=2) ** 2)/len(val_dl.dataset))      
+          print((torch.linalg.norm(y, dim=0, ord=2) ** 2)/len(val_dl.dataset))
+          print(val_loss/(torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset))      
 
         history['loss'].append(train_loss)
         history['val_loss'].append(val_loss)
