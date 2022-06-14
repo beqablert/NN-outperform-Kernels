@@ -42,7 +42,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
     start_time_sec = time.time()
     #l2_reg = np.logscale(-6,-2,20) #they used a grid for l2 but we keep it simple for now
     l2_reg_RF = 1e-1
-    l2_reg_NT = 1
+    l2_reg_NT = 1e-1
     l2_reg_NN = 1e-3
     # regW = np.zeros(256)
     for epoch in range(1, epochs+1):
@@ -63,7 +63,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         elif model_name == "NT":
             train_dl = DataLoader(train_data, batch_size=10 ** 4, shuffle=True)
             val_dl = DataLoader(val_data, batch_size=10 ** 4, shuffle=True)
-            lr_t = 1e-3 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
+            lr_t = 1e-3 # np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
             optimizer = optim.Adam(model.parameters(), lr=lr_t, weight_decay=l2_reg_NT)
         # --- TRAIN AND EVALUATE ON TRAINING SET -----------------------------
         model.train()
@@ -355,7 +355,7 @@ class NT_Network(nn.Module):
         q = self.g(z)
         RF = self.fc2(q)
         zero_one_mat = 0.5 * (torch.sign(z) + 1.0)
-        zero_one_mat_exp = torch.unsqueeze(zero_one_mat, -1)
+        zero_one_mat_exp = torch.unsqueeze(zero_one_mat, 2)
         zero_one_mat_exp = zero_one_mat_exp.reshape((zero_one_mat_exp.shape[0], 1, self.K))
         U = torch.multiply(zero_one_mat_exp,self.a0)
         q2 = torch.tensordot(U,self.G,dims=([2],[0]))
