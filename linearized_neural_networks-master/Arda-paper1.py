@@ -332,7 +332,7 @@ class NT_Network(nn.Module):
         self.K = K
         self.loss = square_loss
         #First layer weights are fixed!
-        self.w = np.random.normal(256,K)
+        self.w = np.random.normal(size=(256,K))
         norm = np.linalg.norm(self.w,axis=0,keepdims=True)
         self.w = self.w/norm
         self.w = torch.from_numpy(self.w)
@@ -439,7 +439,7 @@ history_RF_tau_val = []
 history_NN_tau_val = []
 history_NT_tau_val = []
 
-noise_index = [0, 1, 2]
+noise_index = [2]
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
 
