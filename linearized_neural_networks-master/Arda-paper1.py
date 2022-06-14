@@ -62,7 +62,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         elif model_name == "NT":
             train_dl = DataLoader(train_data, batch_size=10 ** 4, shuffle=True)
             val_dl = DataLoader(val_data, batch_size=10 ** 4, shuffle=True)
-            lr_t = 1e-3 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
+            lr_t = 1e-1 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
             optimizer = optim.Adam(model.parameters(), lr=lr_t, weight_decay=l2_reg_NT)
         # --- TRAIN AND EVALUATE ON TRAINING SET -----------------------------
         model.train()
@@ -350,7 +350,7 @@ class NT_Network(nn.Module):
         x_ = x
         z = self.fc1(x)/math.sqrt(self.K)
         q = self.g(z)
-        RF = self.fc2(q)/math.sqrt(self.K)
+        RF = self.fc2(q)
         zero_one_mat = 0.5 * (torch.sign(z) + 1.0)
         zero_one_mat_exp = torch.unsqueeze(zero_one_mat, -1)
         zero_one_mat_exp = zero_one_mat_exp.reshape((zero_one_mat_exp.shape[0], 1, self.K))
@@ -359,7 +359,7 @@ class NT_Network(nn.Module):
         temp = torch.unsqueeze(x_, 2)
         aux_data = temp.reshape((temp.shape[0],1,temp.shape[1]))  # bs x 1 x d
         temp = torch.multiply(q2, aux_data)/math.sqrt(self.K)
-        NT = temp.sum(2)/math.sqrt(self.K)  # bs x num_class
+        NT = temp.sum(2)  # bs x num_class
         x = NT + RF
         #x = torch.tensor(x)
         #x = x.cuda()
