@@ -338,6 +338,7 @@ class NT_Network(nn.Module):
         norm = np.linalg.norm(self.w,axis=0,keepdims=True)
         print(norm)
         self.w = self.w/norm
+        print(self.w)
         self.w = torch.from_numpy(self.w)
         self.w = self.w.float()
         self.w = self.w.cuda()
@@ -364,6 +365,7 @@ class NT_Network(nn.Module):
         aux_data = temp.reshape((temp.shape[0],1,temp.shape[1]))  # bs x 1 x d
         temp = torch.multiply(q2, aux_data)
         NT = temp.sum(2)  # bs x num_class
+        print(NT)
         x = NT + RF
         #x = torch.tensor(x)
         #x = x.cuda()
