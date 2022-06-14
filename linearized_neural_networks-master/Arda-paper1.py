@@ -336,6 +336,7 @@ class NT_Network(nn.Module):
         #First layer weights are fixed!
         self.w = np.random.randn(256,K)
         norm = np.linalg.norm(self.w,axis=0,keepdims=True)
+        print(norm)
         self.w = self.w/norm
         self.w = torch.from_numpy(self.w)
         self.w = self.w.float()
