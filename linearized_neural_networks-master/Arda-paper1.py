@@ -42,7 +42,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
     start_time_sec = time.time()
     #l2_reg = np.logscale(-6,-2,20) #they used a grid for l2 but we keep it simple for now
     l2_reg_RF = 1e-1
-    l2_reg_NT = 1e-2
+    l2_reg_NT = 1
     l2_reg_NN = 1e-3
     # regW = np.zeros(256)
     for epoch in range(1, epochs+1):
