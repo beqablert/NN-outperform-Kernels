@@ -81,7 +81,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             # print(yhat)
             # print(y)
             loss = loss_fn(yhat, y)
-            loss = loss + nn.MSELoss(model.wReg)*1e-2
+            loss = loss + torch.norm(model.wReg, 2)*1e-2
             # print(loss)
             loss.backward()
             optimizer.step()
