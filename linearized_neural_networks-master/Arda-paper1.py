@@ -365,7 +365,7 @@ class NT_Network(nn.Module):
         aux_data = temp.reshape((temp.shape[0],1,temp.shape[1]))  # bs x 1 x d
         temp = torch.multiply(q2, aux_data)
         NT = temp.sum(2)  # bs x num_class
-        print(NT)
+        # print(NT)
         x = NT + RF
         #x = torch.tensor(x)
         #x = x.cuda()
@@ -492,7 +492,7 @@ for i in range(len(noise_index)):
     # history_RF_tau.append(history_RF["plot_val"])
     print("-------- Calculate NT Kernel.... ----------")
     print(noise_index[i])
-    net_NT = NT_Network(K=160,std=1/math.sqrt(256*160)).to(device)
+    net_NT = NT_Network(K=1024,std=1/math.sqrt(256)).to(device)
     history_NT = train(
         model = net_NT,
         loss_fn = criterion,
