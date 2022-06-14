@@ -44,6 +44,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
     l2_reg_RF = 1e-1
     l2_reg_NT = 1e-2
     l2_reg_NN = 1e-3
+    regW = np.zeros(256)
     for epoch in range(1, epochs+1):
         if model_name == "NN":
             if epoch <=15:# "Warm up"
@@ -80,6 +81,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             # print(yhat)
             # print(y)
             loss = loss_fn(yhat, y)
+            loss = loss + nn.MSELoss(model.wReg)
             # print(loss)
             loss.backward()
             optimizer.step()
@@ -303,10 +305,11 @@ class RF_Network(nn.Module):
         self.w = self.w.float()
         self.w = self.w.cuda()
         self.w = self.w.T
-        self.fc1 = nn.Linear(256*K, K, bias=True)
+        self.fc1 = nn.Linear(256, K, bias=False)
         self.fc1.weight = nn.Parameter(self.w, requires_grad=False)  # Fix initialized weight
         self.fc2 = nn.Linear(K, 1, bias=True)
         nn.init.normal_(self.fc2.weight, std=std)
+        self.wReg = self.fc2.weight
 
 
     def forward(self, x):
@@ -325,7 +328,6 @@ class NT_Network(nn.Module):
         - N input dimensions """
         print("Creating a Neural Network ")
         super(NT_Network, self).__init__()
-
         self.a0 = (torch.randn(1,1,K)).cuda()
         self.g = nn.ReLU()
         self.soft = nn.Softmax(dim=1)
@@ -344,11 +346,12 @@ class NT_Network(nn.Module):
         self.fc2 = nn.Linear(K, 1, bias=True)
         nn.init.normal_(self.fc2.weight, std=std)
         self.G = (torch.randn(K,256)).cuda()
+        self.wReg = self.G
 
     def forward(self, x):
         # input to hidden
         x_ = x
-        z = self.fc1(x)/math.sqrt(self.K)
+        z = self.fc1(x) #/math.sqrt(self.K)
         q = self.g(z)
         RF = self.fc2(q)
         zero_one_mat = 0.5 * (torch.sign(z) + 1.0)
@@ -358,9 +361,9 @@ class NT_Network(nn.Module):
         q2 = torch.tensordot(U,self.G,dims=([2],[0]))
         temp = torch.unsqueeze(x_, 2)
         aux_data = temp.reshape((temp.shape[0],1,temp.shape[1]))  # bs x 1 x d
-        temp = torch.multiply(q2, aux_data)/math.sqrt(self.K)
+        temp = torch.multiply(q2, aux_data)
         NT = temp.sum(2)  # bs x num_class
-        x = (NT + RF)/math.sqrt(self.K)
+        x = NT + RF
         #x = torch.tensor(x)
         #x = x.cuda()
         # x = self.soft(x)
@@ -444,7 +447,7 @@ noise_index = [2, 0]
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
 
 for i in range(len(noise_index)):
-    criterion = nn.MSELoss()
+    criterion = square_loss
     # print("Tau={}".format(tau[i]))
     print("Generate Data with noise in high frequencies....")
     # X_train,Y_train,= get_data_with_HF_noise(tau=tau[i],x_train_=x_train_,y_train=y_train)
@@ -460,7 +463,7 @@ for i in range(len(noise_index)):
     print(Y[0])
     train_data = SynthDataset(X, Y)
     val_data = SynthDataset(XT, YT)
-    net_NN = NeuralNetwork(K=6,p=0.2,std=1/math.sqrt(256)).to(device)
+    # net_NN = NeuralNetwork(K=6,p=0.2,std=1/math.sqrt(256)).to(device)
     # print("--------- Train Neural Network... ---------")
     # print(noise_index[i])
     # history_NN = train(
