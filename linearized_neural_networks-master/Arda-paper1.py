@@ -62,7 +62,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         elif model_name == "NT":
             train_dl = DataLoader(train_data, batch_size=10 ** 4, shuffle=True)
             val_dl = DataLoader(val_data, batch_size=10 ** 4, shuffle=True)
-            lr_t = 1e-2 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
+            lr_t = 1e-3 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
             optimizer = optim.Adam(model.parameters(), lr=lr_t, weight_decay=l2_reg_NT)
         # --- TRAIN AND EVALUATE ON TRAINING SET -----------------------------
         model.train()
