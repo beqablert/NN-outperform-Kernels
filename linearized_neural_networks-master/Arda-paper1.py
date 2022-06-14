@@ -332,7 +332,7 @@ class NT_Network(nn.Module):
         self.g = nn.ReLU()
         self.soft = nn.Softmax(dim=1)
         self.K = K
-        self.loss = square_loss
+        self.loss = nn.MSELoss()
         #First layer weights are fixed!
         self.w = np.random.normal(size=(256,K))
         norm = np.linalg.norm(self.w,axis=0,keepdims=True)
@@ -447,7 +447,7 @@ noise_index = [2, 0]
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
 
 for i in range(len(noise_index)):
-    criterion = square_loss
+    criterion = nn.MSELoss()
     # print("Tau={}".format(tau[i]))
     print("Generate Data with noise in high frequencies....")
     # X_train,Y_train,= get_data_with_HF_noise(tau=tau[i],x_train_=x_train_,y_train=y_train)
