@@ -303,7 +303,7 @@ class RF_Network(nn.Module):
         self.w = self.w.float()
         self.w = self.w.cuda()
         self.w = self.w.T
-        self.fc1 = nn.Linear(256, K, bias=True)
+        self.fc1 = nn.Linear(256*K, K, bias=True)
         self.fc1.weight = nn.Parameter(self.w, requires_grad=False)  # Fix initialized weight
         self.fc2 = nn.Linear(K, 1, bias=True)
         nn.init.normal_(self.fc2.weight, std=std)
