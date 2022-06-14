@@ -350,7 +350,7 @@ class NT_Network(nn.Module):
         x_ = x
         z = self.fc1(x)/math.sqrt(self.K)
         q = self.g(z)
-        RF = self.fc2(q)
+        RF = self.fc2(q)/math.sqrt(self.K)
         zero_one_mat = 0.5 * (torch.sign(z) + 1.0)
         zero_one_mat_exp = torch.unsqueeze(zero_one_mat, -1)
         zero_one_mat_exp = zero_one_mat_exp.reshape((zero_one_mat_exp.shape[0], 1, self.K))
@@ -359,7 +359,7 @@ class NT_Network(nn.Module):
         temp = torch.unsqueeze(x_, 2)
         aux_data = temp.reshape((temp.shape[0],1,temp.shape[1]))  # bs x 1 x d
         temp = torch.multiply(q2, aux_data)/math.sqrt(self.K)
-        NT = temp.sum(2)  # bs x num_class
+        NT = temp.sum(2)/math.sqrt(self.K)  # bs x num_class
         x = NT + RF
         #x = torch.tensor(x)
         #x = x.cuda()
