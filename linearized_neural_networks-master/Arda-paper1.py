@@ -44,7 +44,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
     l2_reg_RF = 1e-1
     l2_reg_NT = 1e-2
     l2_reg_NN = 1e-3
-    regW = np.zeros(256)
+    # regW = np.zeros(256)
     for epoch in range(1, epochs+1):
         if model_name == "NN":
             if epoch <=15:# "Warm up"
@@ -54,12 +54,12 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
               train_dl = DataLoader(train_data, batch_size=1000,shuffle=True)
               val_dl = DataLoader(val_data, batch_size=1000,shuffle=True)
             lr_t = 1e-3 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
-            optimizer = optim.SGD(model.parameters(), lr=lr_t, momentum=0.9,weight_decay=l2_reg_NN)
+            optimizer = optim.SGD(model.parameters(), lr=lr_t, momentum=0.9, weight_decay=l2_reg_NN)
         elif model_name == "RF":
             train_dl = DataLoader(train_data, batch_size=10**4, shuffle=True)
             val_dl = DataLoader(val_data, batch_size=10**4, shuffle=True)
             lr_t = 1e-4 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
-            optimizer = optim.Adam(model.parameters(), lr=lr_t,weight_decay=l2_reg_RF)
+            optimizer = optim.Adam(model.parameters(), lr=lr_t, weight_decay=l2_reg_RF)
         elif model_name == "NT":
             train_dl = DataLoader(train_data, batch_size=10 ** 4, shuffle=True)
             val_dl = DataLoader(val_data, batch_size=10 ** 4, shuffle=True)
@@ -81,8 +81,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             # print(yhat)
             # print(y)
             loss = loss_fn(yhat, y)
-            loss = loss + torch.norm(model.wReg, 2)*1e-2
-            # print(loss)
+            
             loss.backward()
             optimizer.step()
 
@@ -283,7 +282,8 @@ class NeuralNetwork(nn.Module):
     return x
 
 def square_loss(y_true, y_pred):
-   return (y_true - y_pred) ** 2
+    return (y_true - y_pred) ** 2
+     
 
 class RF_Network(nn.Module):
     def __init__(self, K, std):
