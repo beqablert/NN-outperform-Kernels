@@ -334,7 +334,7 @@ class NT_Network(nn.Module):
         self.K = K
         self.loss = nn.MSELoss()
         #First layer weights are fixed!
-        self.w = np.random.normal(size=(256,K))
+        self.w = np.random.randn(256,K)
         norm = np.linalg.norm(self.w,axis=0,keepdims=True)
         self.w = self.w/norm
         self.w = torch.from_numpy(self.w)
