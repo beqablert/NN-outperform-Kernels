@@ -332,7 +332,7 @@ class NT_Network(nn.Module):
         self.K = K
         self.loss = square_loss
         #First layer weights are fixed!
-        self.w = np.random.randn(256,K)
+        self.w = np.random.normal(256,K)
         norm = np.linalg.norm(self.w,axis=0,keepdims=True)
         self.w = self.w/norm
         self.w = torch.from_numpy(self.w)
@@ -460,7 +460,7 @@ for i in range(len(noise_index)):
     print(Y[0])
     train_data = SynthDataset(X, Y)
     val_data = SynthDataset(XT, YT)
-    net_NN = NeuralNetwork(K=30,p=0.2,std=1/math.sqrt(256)).to(device)
+    net_NN = NeuralNetwork(K=6,p=0.2,std=1/math.sqrt(256)).to(device)
     print("--------- Train Neural Network... ---------")
     print(noise_index[i])
     history_NN = train(
@@ -474,7 +474,7 @@ for i in range(len(noise_index)):
     history_NN_tau_val.append(history_NN["plot_val"])
     print("---------- Calculate and Train RF Kernel... ---------")
     print(noise_index[i])
-    net_RF = RF_Network(K=2000,std=1/math.sqrt(256)).to(device)
+    net_RF = RF_Network(K=400,std=1/math.sqrt(256)).to(device)
     history_RF = train(
         model = net_RF,
         loss_fn = criterion,
