@@ -62,7 +62,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         elif model_name == "NT":
             train_dl = DataLoader(train_data, batch_size=10 ** 4, shuffle=True)
             val_dl = DataLoader(val_data, batch_size=10 ** 4, shuffle=True)
-            lr_t = 1e-3 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
+            lr_t = 1e-2 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
             optimizer = optim.Adam(model.parameters(), lr=lr_t, weight_decay=l2_reg_NT)
         # --- TRAIN AND EVALUATE ON TRAINING SET -----------------------------
         model.train()
@@ -439,63 +439,63 @@ history_RF_tau_val = []
 history_NN_tau_val = []
 history_NT_tau_val = []
 
-noise_index = 0
+noise_index = [0, 1, 2]
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
 
-# for i in range(len(tau)):
-criterion = nn.MSELoss()
-# print("Tau={}".format(tau[i]))
-print("Generate Data with noise in high frequencies....")
-# X_train,Y_train,= get_data_with_HF_noise(tau=tau[i],x_train_=x_train_,y_train=y_train)
-# X_test,Y_test,= get_data_with_HF_noise(tau=tau[i],x_train_=x_test,y_train=y_test)
-# train_data = FashionDataset(X_train,Y_train)
-# val_data = FashionDataset(X_test,Y_test)
-X = np.load('./datasets/synthetic/X_train_anisotropic_256_9_%d.npy'%(noise_index))
-Y = np.load('./datasets/synthetic/y_train_anisotropic_256_9_%d.npy'%(noise_index))	
-YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index))
-XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index))
-print(Y.shape[0])
-print(Y.shape[1])
-print(Y[0])
-train_data = SynthDataset(X, Y)
-val_data = SynthDataset(XT, YT)
-# net_NN = NeuralNetwork(K=160,p=0.2,std=1/math.sqrt(256)).to(device)
-# print("--------- Train Neural Network... ---------")
-# history_NN = train(
-#     model = net_NN,
-#     loss_fn = criterion,
-#     device=device,
-#     train_data = train_data,
-#     val_data = val_data,
-#     model_name= "NN")
-# history_NN_tau.append(history_NN["val_acc"])
-# history_NN_tau_val.append(history_NN["plot_val"])
-# print("---------- Calculate and Train RF Kernel... ---------")
-# net_RF = RF_Network(K=10000,std=1/math.sqrt(256)).to(device)
-# history_RF = train(
-#     model = net_RF,
-#     loss_fn = criterion,
-#     device=device,
-#     train_data = train_data,
-#     val_data = val_data,
-#     model_name="RF")
-# history_RF_tau_val.append(history_RF["val_acc"])
-# history_RF_tau.append(history_RF["plot_val"])
-print("-------- Calculate NT Kernel.... ----------")
-net_NT = NT_Network(K=160,std=1/math.sqrt(256)).to(device)
-history_NT = train(
-    model = net_NT,
-    loss_fn = criterion,
-    device=device,
-    train_data = train_data,
-    val_data = val_data,
-    model_name="NT")
-history_NT_tau.append(history_NT["val_acc"])
-history_NT_tau.append(history_NT["plot_val"])
-  #print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NN["val_acc"][-1]))
-  #print("Test Accuracy of Random Features for tau = {} is {}".format(tau[i], history_RF["val_acc"][-1]))
-#   print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NT["val_acc"][-1]))
+for i in range(len(noise_index)):
+    criterion = nn.MSELoss()
+    # print("Tau={}".format(tau[i]))
+    print("Generate Data with noise in high frequencies....")
+    # X_train,Y_train,= get_data_with_HF_noise(tau=tau[i],x_train_=x_train_,y_train=y_train)
+    # X_test,Y_test,= get_data_with_HF_noise(tau=tau[i],x_train_=x_test,y_train=y_test)
+    # train_data = FashionDataset(X_train,Y_train)
+    # val_data = FashionDataset(X_test,Y_test)
+    X = np.load('./datasets/synthetic/X_train_anisotropic_256_9_%d.npy'%(noise_index[i]))
+    Y = np.load('./datasets/synthetic/y_train_anisotropic_256_9_%d.npy'%(noise_index[i]))	
+    YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index[i]])
+    XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
+    print(Y.shape[0])
+    print(Y.shape[1])
+    print(Y[0])
+    train_data = SynthDataset(X, Y)
+    val_data = SynthDataset(XT, YT)
+    net_NN = NeuralNetwork(K=30,p=0.2,std=1/math.sqrt(256)).to(device)
+    print("--------- Train Neural Network... ---------")
+    history_NN = train(
+        model = net_NN,
+        loss_fn = criterion,
+        device=device,
+        train_data = train_data,
+        val_data = val_data,
+        model_name= "NN")
+    history_NN_tau.append(history_NN["val_acc"])
+    history_NN_tau_val.append(history_NN["plot_val"])
+    print("---------- Calculate and Train RF Kernel... ---------")
+    net_RF = RF_Network(K=2000,std=1/math.sqrt(256)).to(device)
+    history_RF = train(
+        model = net_RF,
+        loss_fn = criterion,
+        device=device,
+        train_data = train_data,
+        val_data = val_data,
+        model_name="RF")
+    history_RF_tau_val.append(history_RF["val_acc"])
+    history_RF_tau.append(history_RF["plot_val"])
+    # print("-------- Calculate NT Kernel.... ----------")
+    # net_NT = NT_Network(K=160,std=1/math.sqrt(256)).to(device)
+    # history_NT = train(
+    #     model = net_NT,
+    #     loss_fn = criterion,
+    #     device=device,
+    #     train_data = train_data,
+    #     val_data = val_data,
+    #     model_name="NT")
+    # history_NT_tau.append(history_NT["val_acc"])
+    # history_NT_tau.append(history_NT["plot_val"])
+    #print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NN["val_acc"][-1]))
+    #print("Test Accuracy of Random Features for tau = {} is {}".format(tau[i], history_RF["val_acc"][-1]))
+    #   print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NT["val_acc"][-1]))
 
 
 #   K = NTK2(X_train.T,X_train.T)
