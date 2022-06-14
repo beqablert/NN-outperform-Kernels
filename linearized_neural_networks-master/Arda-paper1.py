@@ -365,7 +365,7 @@ class NT_Network(nn.Module):
         aux_data = temp.reshape((temp.shape[0],1,temp.shape[1]))  # bs x 1 x d
         temp = torch.multiply(q2, aux_data)
         NT = temp.sum(2)  # bs x num_class
-        # print(NT)
+        print(NT)
         x = NT + RF
         #x = torch.tensor(x)
         #x = x.cuda()
