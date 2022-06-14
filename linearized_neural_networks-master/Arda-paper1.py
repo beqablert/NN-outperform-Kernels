@@ -347,7 +347,7 @@ class NT_Network(nn.Module):
         self.fc1.weight = nn.Parameter(self.w, requires_grad=False)  # Fix initialized weight
         self.fc2 = nn.Linear(K, 1, bias=True)
         nn.init.normal_(self.fc2.weight, std=std)
-        self.G = (torch.randn(K,256)).cuda()
+        self.G = (torch.zeros(K,256)).cuda()
         self.wReg = self.G
 
     def forward(self, x):
