@@ -453,7 +453,7 @@ for i in range(len(noise_index)):
     # val_data = FashionDataset(X_test,Y_test)
     X = np.load('./datasets/synthetic/X_train_anisotropic_256_9_%d.npy'%(noise_index[i]))
     Y = np.load('./datasets/synthetic/y_train_anisotropic_256_9_%d.npy'%(noise_index[i]))	
-    YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index[i]])
+    YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
     XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
     print(Y.shape[0])
     print(Y.shape[1])
@@ -462,6 +462,7 @@ for i in range(len(noise_index)):
     val_data = SynthDataset(XT, YT)
     net_NN = NeuralNetwork(K=30,p=0.2,std=1/math.sqrt(256)).to(device)
     print("--------- Train Neural Network... ---------")
+    print(noise_index[i])
     history_NN = train(
         model = net_NN,
         loss_fn = criterion,
@@ -472,6 +473,7 @@ for i in range(len(noise_index)):
     history_NN_tau.append(history_NN["val_acc"])
     history_NN_tau_val.append(history_NN["plot_val"])
     print("---------- Calculate and Train RF Kernel... ---------")
+    print(noise_index[i])
     net_RF = RF_Network(K=2000,std=1/math.sqrt(256)).to(device)
     history_RF = train(
         model = net_RF,
