@@ -126,17 +126,9 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         if epoch == 1 or epoch % 10 == 0: #show progress every 10 epochs
           print('Epoch %3d/%3d, train loss: %5.2f, train acc: %5.2f, val loss: %5.2f, val acc: %5.2f' % \
                 (epoch, epochs, train_loss, train_acc, val_loss, val_acc))
-          print(len(val_dl.dataset))
           if epoch == 750:
-            history['yhat_norm'].append((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset).__str__)
-          print(yhat)
-          history['loss'].append(float((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset)))
-          print(float((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset)))
-          with open('./results/RF_results.txt', 'w') as f:
-            np.savetxt(f, history['loss'])
-          print(yhat.size(0))
-          print(y)
-          print(y.size(0))
+            history['yhat_norm'].append(float((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset)))
+            history['y_norm'].append(float((torch.linalg.norm(y, dim=0, ord=2) ** 2)/len(val_dl.dataset)))
           print((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset))
           print((torch.linalg.norm(y, dim=0, ord=2) ** 2)/len(val_dl.dataset))
           print((val_loss - (torch.linalg.norm(y, dim=0, ord=2) ** 2)/len(val_dl.dataset))/((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset)))      
@@ -145,7 +137,6 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         history['val_loss'].append(val_loss)
         history['acc'].append(train_acc)
         history['val_acc'].append(val_acc)
-        # history['yhat_norm'].append()
 
     # END OF TRAINING LOOP
 
@@ -341,7 +332,7 @@ class NT_Network(nn.Module):
         - N input dimensions """
         print("Creating a Neural Network ")
         super(NT_Network, self).__init__()
-        self.a0 = (torch.randn(1,1,K)) #.cuda()
+        self.a0 = (torch.randn(1,1,K)).cuda()
         self.g = nn.ReLU()
         self.soft = nn.Softmax(dim=1)
         self.K = K
@@ -354,13 +345,13 @@ class NT_Network(nn.Module):
         print(self.w)
         self.w = torch.from_numpy(self.w)
         self.w = self.w.float()
-        self.w = self.w #.cuda()
+        self.w = self.w.cuda()
         self.w = self.w.T
         self.fc1 = nn.Linear(256, K, bias=False)
         self.fc1.weight = nn.Parameter(self.w, requires_grad=False)  # Fix initialized weight
         self.fc2 = nn.Linear(K, 1, bias=True)
         nn.init.normal_(self.fc2.weight, std=std)
-        self.G = (torch.randn(K,256)) #.cuda()
+        self.G = (torch.randn(K,256)).cuda()
         self.wReg = self.G
 
     def forward(self, x):
@@ -459,12 +450,15 @@ print(device)
 # (x_train_, y_train), (x_test, y_test) = tf.keras.datasets.fashion_mnist.load_data()
 history_NN_tau = []
 history_RF_tau = []
-history_NT_tau = []
+history_NT_val_loss = []
+history_NT_yhat_norm = []
+history_NT_y_norm = []
+history_NT_val_acc = []
 history_RF_tau_val = []
 history_NN_tau_val = []
 history_NT_tau_val = []
 
-noise_index = [0, 2]
+noise_index = [0, 1, 2]
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
 
@@ -511,7 +505,7 @@ for i in range(len(noise_index)):
     # history_RF_tau.append(history_RF["plot_val"])
     print("-------- Calculate NT Kernel.... ----------")
     print(noise_index[i])
-    net_NT = NT_Network(K=6,std=1/math.sqrt(256)).to(device)
+    net_NT = NT_Network(K=150,std=1/math.sqrt(256)).to(device)
     history_NT = train(
         model = net_NT,
         loss_fn = criterion,
@@ -519,8 +513,10 @@ for i in range(len(noise_index)):
         train_data = train_data,
         val_data = val_data,
         model_name="NT")
-    history_NT_tau.append(history_NT["val_acc"])
-    history_NT_tau.append(history_NT["plot_val"])
+    history_NT_val_acc.append(history_NT["val_acc"])
+    history_NT_val_loss.append(history_NT["val_loss"])
+    history_NT_yhat_norm.append(history_NT["yhat_norm"])
+    history_NT_y_norm.append(history_NT["y_norm"])
     #print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NN["val_acc"][-1]))
     #print("Test Accuracy of Random Features for tau = {} is {}".format(tau[i], history_RF["val_acc"][-1]))
     #   print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NT["val_acc"][-1]))
@@ -563,16 +559,28 @@ for i in range(len(noise_index)):
 # with open('/home/apdl008/Paper1/NT_val_acc_taus.txt', 'w') as f:
 #         np.savetxt(f, history_NT_tau)
 
-with open('./results/RF_results.txt', 'w') as f:
-            np.savetxt(f, history_RF_tau)
+with open('./results/NTK_results.txt', 'w') as f:
+            np.savetxt(f, history_NT_val_loss)
             
-with open('./results/RF_results_val_acc.txt', 'w') as f:
-            np.savetxt(f, history_RF_tau_val)   
+with open('./results/NTK_results_val_acc.txt', 'w') as f:
+            np.savetxt(f, history_NT_val_acc)
 
-with open('./results/NN_results.txt', 'w') as f:
-            np.savetxt(f, history_NN_tau)
+with open('./results/NTK_results_yhat.txt', 'w') as f:
+            np.savetxt(f, history_NT_yhat_norm)
             
-with open('./results/NN_results_val_acc.txt', 'w') as f:
-            np.savetxt(f, history_NN_tau_val)           
+with open('./results/NTK_results_y.txt', 'w') as f:
+            np.savetxt(f, history_NT_y_norm)            
+
+# with open('./results/RF_results.txt', 'w') as f:
+#             np.savetxt(f, history_RF_tau)
+            
+# with open('./results/RF_results_val_acc.txt', 'w') as f:
+#             np.savetxt(f, history_RF_tau_val)   
+
+# with open('./results/NN_results.txt', 'w') as f:
+#             np.savetxt(f, history_NN_tau)
+            
+# with open('./results/NN_results_val_acc.txt', 'w') as f:
+#             np.savetxt(f, history_NN_tau_val)           
 
 print("Results saved. Bye!")
