@@ -361,6 +361,7 @@ class NT_Network(nn.Module):
         zero_one_mat_exp = zero_one_mat_exp.reshape((zero_one_mat_exp.shape[0], 1, self.K))
         U = torch.multiply(zero_one_mat_exp,self.a0)
         q2 = torch.tensordot(U,self.G,dims=([2],[0]))
+        x_ = x_ / np.linalg.norm(x_,axis=0,keepdims=True)
         temp = torch.unsqueeze(x_, 2)
         aux_data = temp.reshape((temp.shape[0],1,temp.shape[1]))  # bs x 1 x d
         temp = torch.multiply(q2, aux_data)
