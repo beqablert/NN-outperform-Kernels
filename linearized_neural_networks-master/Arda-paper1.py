@@ -340,9 +340,9 @@ class NT_Network(nn.Module):
         #First layer weights are fixed!
         self.w = np.random.randn(256,K)
         norm = np.linalg.norm(self.w,axis=0,keepdims=True)
-        print(norm)
+        # print(norm)
         self.w = self.w/(norm)
-        print(self.w)
+        # print(self.w)
         self.w = torch.from_numpy(self.w)
         self.w = self.w.float()
         self.w = self.w.cuda()
@@ -513,7 +513,6 @@ for j in range(len(K_RF)):
         print(noise_index[i])
         print('K is equal to')
         print(int(K_NT[j]))
-        print(history_RF)
         net_NT = NT_Network(K=int(K_NT[j]),std=1/math.sqrt(256)).to(device)
         history_NT = train(
             model = net_NT,
@@ -526,7 +525,6 @@ for j in range(len(K_RF)):
         history_NT_val_loss.append(history_NT["val_loss"])
         history_NT_yhat_norm.append(history_NT["yhat_norm"])
         history_NT_y_norm.append(history_NT["y_norm"])
-        print(history_NT)
         #print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NN["val_acc"][-1]))
         #print("Test Accuracy of Random Features for tau = {} is {}".format(tau[i], history_RF["val_acc"][-1]))
         #   print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NT["val_acc"][-1]))
