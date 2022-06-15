@@ -67,6 +67,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             optimizer = optim.Adam(model.parameters(), lr=lr_t, weight_decay=l2_reg_NT)
         # --- TRAIN AND EVALUATE ON TRAINING SET -----------------------------
         model.train()
+        print(model.parameters().shape)
         train_loss         = 0.0
         num_train_correct  = 0
         num_train_examples = 0
@@ -257,7 +258,7 @@ class NeuralNetwork(nn.Module):
     self.g=nn.ReLU()
     self.soft = nn.Softmax(dim=1)
     self.K=K
-    self.loss = square_loss
+    self.loss = nn.MSELoss()
     self.drop = nn.Dropout(p=p)
     #change bias to true
     #self.fc1 = nn.utils.weight_norm(nn.Linear(N, K, bias=False))
@@ -274,15 +275,15 @@ class NeuralNetwork(nn.Module):
 
   def forward(self, x):
     # input to hidden
-    x=self.fc1(x)/math.sqrt(self.K)
+    x=self.fc1(x) #/math.sqrt(self.K)
     x=self.g(x)
     x = self.fc2(x)
     x = self.drop(x)
     # x = self.soft(x)
     return x
 
-def square_loss(y_true, y_pred):
-    return (y_true - y_pred) ** 2
+# def square_loss(y_true, y_pred):
+#     return (y_true - y_pred) ** 2
      
 
 class RF_Network(nn.Module):
@@ -296,7 +297,7 @@ class RF_Network(nn.Module):
         self.g = nn.ReLU()
         self.soft = nn.Softmax(dim=1)
         self.K = K
-        self.loss = square_loss
+        self.loss = nn.MSELoss()
         #First layer weights are fixed!
         self.w = np.random.randn(256,K)
         norm = np.linalg.norm(self.w,axis=0,keepdims=True)
@@ -309,7 +310,6 @@ class RF_Network(nn.Module):
         self.fc1.weight = nn.Parameter(self.w, requires_grad=False)  # Fix initialized weight
         self.fc2 = nn.Linear(K, 1, bias=True)
         nn.init.normal_(self.fc2.weight, std=std)
-        self.wReg = self.fc2.weight
 
 
     def forward(self, x):
@@ -451,7 +451,7 @@ history_RF_tau_val = []
 history_NN_tau_val = []
 history_NT_tau_val = []
 
-noise_index = [0, 2]
+noise_index = [2, 0]
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
 
@@ -484,30 +484,30 @@ for i in range(len(noise_index)):
     #     model_name= "NN")
     # history_NN_tau.append(history_NN["val_acc"])
     # history_NN_tau_val.append(history_NN["plot_val"])
-    # print("---------- Calculate and Train RF Kernel... ---------")
-    # print(noise_index[i])
-    # net_RF = RF_Network(K=400,std=1/math.sqrt(256)).to(device)
-    # history_RF = train(
-    #     model = net_RF,
-    #     loss_fn = criterion,
-    #     device=device,
-    #     train_data = train_data,
-    #     val_data = val_data,
-    #     model_name="RF")
-    # history_RF_tau_val.append(history_RF["val_acc"])
-    # history_RF_tau.append(history_RF["plot_val"])
-    print("-------- Calculate NT Kernel.... ----------")
+    print("---------- Calculate and Train RF Kernel... ---------")
     print(noise_index[i])
-    net_NT = NT_Network(K=6,std=1/math.sqrt(256)).to(device)
-    history_NT = train(
-        model = net_NT,
+    net_RF = RF_Network(K=37640,std=1/math.sqrt(256)).to(device)
+    history_RF = train(
+        model = net_RF,
         loss_fn = criterion,
         device=device,
         train_data = train_data,
         val_data = val_data,
-        model_name="NT")
-    history_NT_tau.append(history_NT["val_acc"])
-    history_NT_tau.append(history_NT["plot_val"])
+        model_name="RF")
+    history_RF_tau_val.append(history_RF["val_acc"])
+    history_RF_tau.append(history_RF["plot_val"])
+    # print("-------- Calculate NT Kernel.... ----------")
+    # print(noise_index[i])
+    # net_NT = NT_Network(K=6,std=1/math.sqrt(256)).to(device)
+    # history_NT = train(
+    #     model = net_NT,
+    #     loss_fn = criterion,
+    #     device=device,
+    #     train_data = train_data,
+    #     val_data = val_data,
+    #     model_name="NT")
+    # history_NT_tau.append(history_NT["val_acc"])
+    # history_NT_tau.append(history_NT["plot_val"])
     #print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NN["val_acc"][-1]))
     #print("Test Accuracy of Random Features for tau = {} is {}".format(tau[i], history_RF["val_acc"][-1]))
     #   print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NT["val_acc"][-1]))
