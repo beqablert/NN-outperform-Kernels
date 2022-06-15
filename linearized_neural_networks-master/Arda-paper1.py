@@ -498,7 +498,7 @@ for i in range(len(noise_index)):
     # history_RF_tau.append(history_RF["plot_val"])
     print("-------- Calculate NT Kernel.... ----------")
     print(noise_index[i])
-    net_NT = NT_Network(K=1024,std=1/math.sqrt(256)).to(device)
+    net_NT = NT_Network(K=160,std=1/math.sqrt(256)).to(device)
     history_NT = train(
         model = net_NT,
         loss_fn = criterion,
