@@ -347,13 +347,13 @@ class NT_Network(nn.Module):
         self.fc1.weight = nn.Parameter(self.w, requires_grad=False)  # Fix initialized weight
         self.fc2 = nn.Linear(K, 1, bias=True)
         nn.init.normal_(self.fc2.weight, std=std)
-        self.G = (torch.zeros(K,256)).cuda()
+        self.G = (torch.randn(K,256)).cuda()
         self.wReg = self.G
 
     def forward(self, x):
         # input to hidden
         x_ = x
-        z = self.fc1(x) #/math.sqrt(self.K)
+        z = self.fc1(x)
         q = self.g(z)
         RF = self.fc2(q)
         zero_one_mat = 0.5 * (torch.sign(z) + 1.0)
@@ -365,7 +365,10 @@ class NT_Network(nn.Module):
         aux_data = temp.reshape((temp.shape[0],1,temp.shape[1]))  # bs x 1 x d
         temp = torch.multiply(q2, aux_data)
         NT = temp.sum(2)  # bs x num_class
-        print(NT)
+        print("////////////////////////////")
+        print(torch.norm(NT))
+        print(torch.norm(RF))
+        print('///////////////////////////')
         x = NT + RF
         #x = torch.tensor(x)
         #x = x.cuda()
