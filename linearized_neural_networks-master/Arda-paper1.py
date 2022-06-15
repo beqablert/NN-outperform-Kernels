@@ -358,7 +358,7 @@ class NT_Network(nn.Module):
 
     def forward(self, x):
         # input to hidden
-        x_ = x
+        x_ = x / torch.mean(torch.sqrt(torch.linalg.norm(x, axis=0, keepdims=True)))
         z = self.fc1(x)
         q = self.g(z)
         RF = self.fc2(q)
@@ -490,30 +490,30 @@ for i in range(len(noise_index)):
     #     model_name= "NN")
     # history_NN_tau.append(history_NN["val_acc"])
     # history_NN_tau_val.append(history_NN["plot_val"])
-    print("---------- Calculate and Train RF Kernel... ---------")
-    print(noise_index[i])
-    net_RF = RF_Network(K=1351,std=1/math.sqrt(256)).to(device)
-    history_RF = train(
-        model = net_RF,
-        loss_fn = criterion,
-        device=device,
-        train_data = train_data,
-        val_data = val_data,
-        model_name="RF")
-    history_RF_tau_val.append(history_RF["val_acc"])
-    history_RF_tau.append(history_RF["plot_val"])
-    # print("-------- Calculate NT Kernel.... ----------")
+    # print("---------- Calculate and Train RF Kernel... ---------")
     # print(noise_index[i])
-    # net_NT = NT_Network(K=6,std=1/math.sqrt(256)).to(device)
-    # history_NT = train(
-    #     model = net_NT,
+    # net_RF = RF_Network(K=1351,std=1/math.sqrt(256)).to(device)
+    # history_RF = train(
+    #     model = net_RF,
     #     loss_fn = criterion,
     #     device=device,
     #     train_data = train_data,
     #     val_data = val_data,
-    #     model_name="NT")
-    # history_NT_tau.append(history_NT["val_acc"])
-    # history_NT_tau.append(history_NT["plot_val"])
+    #     model_name="RF")
+    # history_RF_tau_val.append(history_RF["val_acc"])
+    # history_RF_tau.append(history_RF["plot_val"])
+    print("-------- Calculate NT Kernel.... ----------")
+    print(noise_index[i])
+    net_NT = NT_Network(K=160,std=1/math.sqrt(256)).to(device)
+    history_NT = train(
+        model = net_NT,
+        loss_fn = criterion,
+        device=device,
+        train_data = train_data,
+        val_data = val_data,
+        model_name="NT")
+    history_NT_tau.append(history_NT["val_acc"])
+    history_NT_tau.append(history_NT["plot_val"])
     #print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NN["val_acc"][-1]))
     #print("Test Accuracy of Random Features for tau = {} is {}".format(tau[i], history_RF["val_acc"][-1]))
     #   print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NT["val_acc"][-1]))
