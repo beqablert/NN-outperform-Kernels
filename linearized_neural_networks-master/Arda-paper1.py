@@ -300,7 +300,7 @@ class RF_Network(nn.Module):
         self.loss = nn.MSELoss()
         #First layer weights are fixed!
         self.w = np.random.randn(256,K)
-        norm = np.linalg.norm(self.w,axis=0,keepdims=True)
+        norm = np.linalg.norm(self.w,axis=1,keepdims=True)
         self.w = self.w/(norm)
         self.w = torch.from_numpy(self.w)
         self.w = self.w.float()
@@ -314,7 +314,7 @@ class RF_Network(nn.Module):
 
     def forward(self, x):
         # input to hidden
-        x = np.sqrt(10.556)*x / torch.mean(torch.sqrt(torch.linalg.norm(x, axis=0, keepdims=True)))
+        x = x / torch.mean(torch.sqrt(torch.linalg.norm(x, axis=0, keepdims=True)))
         x = self.fc1(x)
         x = self.g(x)
         x = self.fc2(x)
