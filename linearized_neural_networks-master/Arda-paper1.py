@@ -368,6 +368,8 @@ class NT_Network(nn.Module):
         print("////////////////////////////")
         print(torch.norm(NT, 2))
         print(torch.norm(RF, 2))
+        print(NT.shape)
+        print(RF.shape)
         print('///////////////////////////')
         x = NT + RF
         #x = torch.tensor(x)
