@@ -67,7 +67,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             optimizer = optim.Adam(model.parameters(), lr=lr_t, weight_decay=l2_reg_NT)
         # --- TRAIN AND EVALUATE ON TRAINING SET -----------------------------
         model.train()
-        print(model.parameters().shape)
+        #print(model.parameters().shape)
         train_loss         = 0.0
         num_train_correct  = 0
         num_train_examples = 0
