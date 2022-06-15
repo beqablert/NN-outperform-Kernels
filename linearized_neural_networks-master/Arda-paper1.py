@@ -7,6 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/1ftmIntqT2TeicEEq-SGpz-JbNEMDV79w
 """
 
+import string
 import numpy as np
 import torch.nn as nn
 import torch
@@ -37,7 +38,8 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
     history['val_loss'] = []
     history['acc'] = []
     history['val_acc'] = []
-    history['plot_val'] = []
+    history['yhat_norm'] = []
+    history['y_norm'] = []
 
     start_time_sec = time.time()
     #l2_reg = np.logscale(-6,-2,20) #they used a grid for l2 but we keep it simple for now
@@ -125,7 +127,13 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
           print('Epoch %3d/%3d, train loss: %5.2f, train acc: %5.2f, val loss: %5.2f, val acc: %5.2f' % \
                 (epoch, epochs, train_loss, train_acc, val_loss, val_acc))
           print(len(val_dl.dataset))
+          if epoch == 750:
+            history['yhat_norm'].append((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset).__str__)
           print(yhat)
+          history['loss'].append(float((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset)))
+          print(float((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset)))
+          with open('./results/RF_results.txt', 'w') as f:
+            np.savetxt(f, history['loss'])
           print(yhat.size(0))
           print(y)
           print(y.size(0))
@@ -137,8 +145,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         history['val_loss'].append(val_loss)
         history['acc'].append(train_acc)
         history['val_acc'].append(val_acc)
-        plot_val = (val_loss - (np.linalg.norm(torch.Tensor.cpu(y).detach().numpy(), 2) ** 2)/len(val_dl.dataset))/((np.linalg.norm(torch.Tensor.cpu(yhat).detach().numpy(), 2) ** 2)/len(val_dl.dataset))
-        history['plot_val'].append(plot_val)
+        # history['yhat_norm'].append()
 
     # END OF TRAINING LOOP
 
@@ -334,7 +341,7 @@ class NT_Network(nn.Module):
         - N input dimensions """
         print("Creating a Neural Network ")
         super(NT_Network, self).__init__()
-        self.a0 = (torch.randn(1,1,K)).cuda()
+        self.a0 = (torch.randn(1,1,K)) #.cuda()
         self.g = nn.ReLU()
         self.soft = nn.Softmax(dim=1)
         self.K = K
@@ -347,13 +354,13 @@ class NT_Network(nn.Module):
         print(self.w)
         self.w = torch.from_numpy(self.w)
         self.w = self.w.float()
-        self.w = self.w.cuda()
+        self.w = self.w #.cuda()
         self.w = self.w.T
         self.fc1 = nn.Linear(256, K, bias=False)
         self.fc1.weight = nn.Parameter(self.w, requires_grad=False)  # Fix initialized weight
         self.fc2 = nn.Linear(K, 1, bias=True)
         nn.init.normal_(self.fc2.weight, std=std)
-        self.G = (torch.randn(K,256)).cuda()
+        self.G = (torch.randn(K,256)) #.cuda()
         self.wReg = self.G
 
     def forward(self, x):
