@@ -301,7 +301,7 @@ class RF_Network(nn.Module):
         #First layer weights are fixed!
         self.w = np.random.randn(256,K)
         norm = np.linalg.norm(self.w,axis=0,keepdims=True)
-        self.w = self.w/(norm*5)
+        self.w = self.w/(norm*3)
         self.w = torch.from_numpy(self.w)
         self.w = self.w.float()
         self.w = self.w.cuda()
@@ -451,7 +451,7 @@ history_RF_tau_val = []
 history_NN_tau_val = []
 history_NT_tau_val = []
 
-noise_index = [2, 0]
+noise_index = [1, 0]
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
 
