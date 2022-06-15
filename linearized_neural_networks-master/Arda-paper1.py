@@ -448,78 +448,88 @@ print(device)
 #Get and load data into dataloader
 
 # (x_train_, y_train), (x_test, y_test) = tf.keras.datasets.fashion_mnist.load_data()
-history_NN_tau = []
-history_RF_tau = []
+
 history_NT_val_loss = []
 history_NT_yhat_norm = []
 history_NT_y_norm = []
 history_NT_val_acc = []
+history_RF_val_loss = []
+history_RF_yhat_norm = []
+history_RF_y_norm = []
+history_RF_val_acc = []
 history_RF_tau_val = []
 history_NN_tau_val = []
 history_NT_tau_val = []
 
 noise_index = [0, 1, 2]
+K_RF = 256 ** np.linspace(1.2, 2.0, num=10)
+K_NT = 256 ** np.linspace(0.2, 1.0, num=10)
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
-
-for i in range(len(noise_index)):
-    criterion = nn.MSELoss()
-    # print("Tau={}".format(tau[i]))
-    print("Generate Data with noise in high frequencies....")
-    # X_train,Y_train,= get_data_with_HF_noise(tau=tau[i],x_train_=x_train_,y_train=y_train)
-    # X_test,Y_test,= get_data_with_HF_noise(tau=tau[i],x_train_=x_test,y_train=y_test)
-    # train_data = FashionDataset(X_train,Y_train)
-    # val_data = FashionDataset(X_test,Y_test)
-    X = np.load('./datasets/synthetic/X_train_anisotropic_256_9_%d.npy'%(noise_index[i]))
-    Y = np.load('./datasets/synthetic/y_train_anisotropic_256_9_%d.npy'%(noise_index[i]))	
-    YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
-    XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
-    print(Y.shape[0])
-    print(Y.shape[1])
-    print(Y[0])
-    train_data = SynthDataset(X, Y)
-    val_data = SynthDataset(XT, YT)
-    # net_NN = NeuralNetwork(K=6,p=0.2,std=1/math.sqrt(256)).to(device)
-    # print("--------- Train Neural Network... ---------")
-    # print(noise_index[i])
-    # history_NN = train(
-    #     model = net_NN,
-    #     loss_fn = criterion,
-    #     device=device,
-    #     train_data = train_data,
-    #     val_data = val_data,
-    #     model_name= "NN")
-    # history_NN_tau.append(history_NN["val_acc"])
-    # history_NN_tau_val.append(history_NN["plot_val"])
-    # print("---------- Calculate and Train RF Kernel... ---------")
-    # print(noise_index[i])
-    # net_RF = RF_Network(K=1351,std=1/math.sqrt(256)).to(device)
-    # history_RF = train(
-    #     model = net_RF,
-    #     loss_fn = criterion,
-    #     device=device,
-    #     train_data = train_data,
-    #     val_data = val_data,
-    #     model_name="RF")
-    # history_RF_tau_val.append(history_RF["val_acc"])
-    # history_RF_tau.append(history_RF["plot_val"])
-    print("-------- Calculate NT Kernel.... ----------")
-    print(noise_index[i])
-    net_NT = NT_Network(K=150,std=1/math.sqrt(256)).to(device)
-    history_NT = train(
-        model = net_NT,
-        loss_fn = criterion,
-        device=device,
-        train_data = train_data,
-        val_data = val_data,
-        model_name="NT")
-    history_NT_val_acc.append(history_NT["val_acc"])
-    history_NT_val_loss.append(history_NT["val_loss"])
-    history_NT_yhat_norm.append(history_NT["yhat_norm"])
-    history_NT_y_norm.append(history_NT["y_norm"])
-    #print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NN["val_acc"][-1]))
-    #print("Test Accuracy of Random Features for tau = {} is {}".format(tau[i], history_RF["val_acc"][-1]))
-    #   print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NT["val_acc"][-1]))
+for j in range(len(K_RF)):
+    for i in range(len(noise_index)):
+        criterion = nn.MSELoss()
+        # print("Tau={}".format(tau[i]))
+        # print("Generate Data with noise in high frequencies....")
+        # X_train,Y_train,= get_data_with_HF_noise(tau=tau[i],x_train_=x_train_,y_train=y_train)
+        # X_test,Y_test,= get_data_with_HF_noise(tau=tau[i],x_train_=x_test,y_train=y_test)
+        # train_data = FashionDataset(X_train,Y_train)
+        # val_data = FashionDataset(X_test,Y_test)
+        X = np.load('./datasets/synthetic/X_train_anisotropic_256_9_%d.npy'%(noise_index[i]))
+        Y = np.load('./datasets/synthetic/y_train_anisotropic_256_9_%d.npy'%(noise_index[i]))	
+        YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
+        XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
+        train_data = SynthDataset(X, Y)
+        val_data = SynthDataset(XT, YT)
+        # net_NN = NeuralNetwork(K=6,p=0.2,std=1/math.sqrt(256)).to(device)
+        # print("--------- Train Neural Network... ---------")
+        # print(noise_index[i])
+        # history_NN = train(
+        #     model = net_NN,
+        #     loss_fn = criterion,
+        #     device=device,
+        #     train_data = train_data,
+        #     val_data = val_data,
+        #     model_name= "NN")
+        # history_NN_tau.append(history_NN["val_acc"])
+        # history_NN_tau_val.append(history_NN["plot_val"])
+        print("---------- Calculate and Train RF Kernel... ---------")
+        print(noise_index[i])
+        print('K is equal to')
+        print(int(K_RF[j]))
+        net_RF = RF_Network(K=int(K_RF[j]),std=1/math.sqrt(256)).to(device)
+        history_RF = train(
+            model = net_RF,
+            loss_fn = criterion,
+            device=device,
+            train_data = train_data,
+            val_data = val_data,
+            model_name="RF")
+        history_RF_val_acc.append(history_RF["val_acc"])
+        history_RF_val_loss.append(history_RF["val_loss"])
+        history_RF_yhat_norm.append(history_RF["yhat_norm"])
+        history_RF_y_norm.append(history_RF["y_norm"])
+        print("-------- Calculate NT Kernel.... ----------")
+        print(noise_index[i])
+        print('K is equal to')
+        print(int(K_NT[j]))
+        print(history_NT)
+        net_NT = NT_Network(K=int(K_NT[j]),std=1/math.sqrt(256)).to(device)
+        history_NT = train(
+            model = net_NT,
+            loss_fn = criterion,
+            device=device,
+            train_data = train_data,
+            val_data = val_data,
+            model_name="NT")
+        history_NT_val_acc.append(history_NT["val_acc"])
+        history_NT_val_loss.append(history_NT["val_loss"])
+        history_NT_yhat_norm.append(history_NT["yhat_norm"])
+        history_NT_y_norm.append(history_NT["y_norm"])
+        print(history_NT)
+        #print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NN["val_acc"][-1]))
+        #print("Test Accuracy of Random Features for tau = {} is {}".format(tau[i], history_RF["val_acc"][-1]))
+        #   print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NT["val_acc"][-1]))
 
 
 #   K = NTK2(X_train.T,X_train.T)
@@ -559,18 +569,29 @@ for i in range(len(noise_index)):
 # with open('/home/apdl008/Paper1/NT_val_acc_taus.txt', 'w') as f:
 #         np.savetxt(f, history_NT_tau)
 
-with open('./results/NTK_results.txt', 'w') as f:
-            np.savetxt(f, history_NT_val_loss)
+# with open('./results/NTK_results.txt', 'w') as f:
+#             np.savetxt(f, history_NT_val_loss)
             
-with open('./results/NTK_results_val_acc.txt', 'w') as f:
-            np.savetxt(f, history_NT_val_acc)
+# with open('./results/NTK_results_val_acc.txt', 'w') as f:
+#             np.savetxt(f, history_NT_val_acc)
 
-with open('./results/NTK_results_yhat.txt', 'w') as f:
-            np.savetxt(f, history_NT_yhat_norm)
+# with open('./results/NTK_results_yhat.txt', 'w') as f:
+#             np.savetxt(f, history_NT_yhat_norm)
             
-with open('./results/NTK_results_y.txt', 'w') as f:
-            np.savetxt(f, history_NT_y_norm)            
+# with open('./results/NTK_results_y.txt', 'w') as f:
+#             np.savetxt(f, history_NT_y_norm)            
 
+# with open('./results/RF_results.txt', 'w') as f:
+#             np.savetxt(f, history_RF_val_loss)
+            
+# with open('./results/RF_results_val_acc.txt', 'w') as f:
+#             np.savetxt(f, history_RF_val_acc)
+
+# with open('./results/RF_results_yhat.txt', 'w') as f:
+#             np.savetxt(f, history_RF_yhat_norm)
+            
+# with open('./results/RF_results_y.txt', 'w') as f:
+#             np.savetxt(f, history_RF_y_norm)  
 # with open('./results/RF_results.txt', 'w') as f:
 #             np.savetxt(f, history_RF_tau)
             
