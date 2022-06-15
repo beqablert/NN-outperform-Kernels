@@ -513,7 +513,7 @@ for j in range(len(K_RF)):
         print(noise_index[i])
         print('K is equal to')
         print(int(K_NT[j]))
-        print(history_NT)
+        print(history_RF)
         net_NT = NT_Network(K=int(K_NT[j]),std=1/math.sqrt(256)).to(device)
         history_NT = train(
             model = net_NT,
