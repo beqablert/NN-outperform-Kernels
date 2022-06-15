@@ -63,7 +63,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         elif model_name == "NT":
             train_dl = DataLoader(train_data, batch_size=10 ** 4, shuffle=True)
             val_dl = DataLoader(val_data, batch_size=10 ** 4, shuffle=True)
-            lr_t = 1e-3 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
+            lr_t = 1e-4 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
             optimizer = optim.Adam(model.parameters(), lr=lr_t, weight_decay=l2_reg_NT)
         # --- TRAIN AND EVALUATE ON TRAINING SET -----------------------------
         model.train()
@@ -498,7 +498,7 @@ for i in range(len(noise_index)):
     # history_RF_tau.append(history_RF["plot_val"])
     print("-------- Calculate NT Kernel.... ----------")
     print(noise_index[i])
-    net_NT = NT_Network(K=160,std=1/math.sqrt(256)).to(device)
+    net_NT = NT_Network(K=30,std=1/math.sqrt(256)).to(device)
     history_NT = train(
         model = net_NT,
         loss_fn = criterion,
