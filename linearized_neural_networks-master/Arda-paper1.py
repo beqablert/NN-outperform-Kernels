@@ -323,7 +323,6 @@ class RF_Network(nn.Module):
         x = self.fc1(x)
         x = self.g(x)
         x = self.fc2(x)
-        x = x/(torch.linalg.norm(x, axis=1, keepdims=True))
         # x = self.soft(x)
         return x
 
