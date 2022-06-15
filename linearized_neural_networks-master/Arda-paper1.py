@@ -314,7 +314,7 @@ class RF_Network(nn.Module):
 
     def forward(self, x):
         # input to hidden
-        x = np.sqrt(5)*x / torch.sqrt(torch.linalg.norm(x, axis=0, keepdims=True))
+        x = np.sqrt(10)*x / torch.sqrt(torch.linalg.norm(x, axis=0, keepdims=True))
         x = self.fc1(x)
         x = self.g(x)
         x = self.fc2(x)
