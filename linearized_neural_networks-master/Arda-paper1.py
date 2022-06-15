@@ -314,7 +314,7 @@ class RF_Network(nn.Module):
 
     def forward(self, x):
         # input to hidden
-        x = np.sqrt(2)*x / torch.sqrt(torch.linalg.norm(x, axis=0, keepdims=True))
+        x = x / torch.sqrt(torch.linalg.norm(x, axis=0, keepdims=True))
         x = self.fc1(x)
         x = self.g(x)
         x = self.fc2(x)
@@ -452,7 +452,7 @@ history_RF_tau_val = []
 history_NN_tau_val = []
 history_NT_tau_val = []
 
-noise_index = [2, 0]
+noise_index = [1, 0]
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
 
