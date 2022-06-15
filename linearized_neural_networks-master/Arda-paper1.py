@@ -124,6 +124,8 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         if epoch == 1 or epoch % 10 == 0: #show progress every 10 epochs
           print('Epoch %3d/%3d, train loss: %5.2f, train acc: %5.2f, val loss: %5.2f, val acc: %5.2f' % \
                 (epoch, epochs, train_loss, train_acc, val_loss, val_acc))
+          print(val_dl.dataset)
+          print(yhat)
           print((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset))
           print((torch.linalg.norm(y, dim=0, ord=2) ** 2)/len(val_dl.dataset))
           print((val_loss - (torch.linalg.norm(y, dim=0, ord=2) ** 2)/len(val_dl.dataset))/((torch.linalg.norm(yhat, dim=0, ord=2) ** 2)/len(val_dl.dataset)))      
