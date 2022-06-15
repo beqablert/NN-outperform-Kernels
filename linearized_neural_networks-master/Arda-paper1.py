@@ -366,8 +366,8 @@ class NT_Network(nn.Module):
         temp = torch.multiply(q2, aux_data)
         NT = temp.sum(2)  # bs x num_class
         print("////////////////////////////")
-        print(torch.norm(NT))
-        print(torch.norm(RF))
+        print(torch.norm(NT, 2))
+        print(torch.norm(RF, 2))
         print('///////////////////////////')
         x = NT + RF
         #x = torch.tensor(x)
