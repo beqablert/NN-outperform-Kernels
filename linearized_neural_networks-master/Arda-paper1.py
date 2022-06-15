@@ -306,7 +306,7 @@ class RF_Network(nn.Module):
         #First layer weights are fixed!
         self.w = np.random.randn(256,K)
         norm = np.linalg.norm(self.w,axis=0,keepdims=True)
-        self.w = self.w/(norm*np.sqrt(K/256))
+        self.w = self.w/(norm)
         self.w = torch.from_numpy(self.w)
         self.w = self.w.float()
         self.w = self.w.cuda()
@@ -343,7 +343,7 @@ class NT_Network(nn.Module):
         self.w = np.random.randn(256,K)
         norm = np.linalg.norm(self.w,axis=0,keepdims=True)
         print(norm)
-        self.w = self.w/(norm*np.sqrt(K/256))
+        self.w = self.w/(norm)
         print(self.w)
         self.w = torch.from_numpy(self.w)
         self.w = self.w.float()
