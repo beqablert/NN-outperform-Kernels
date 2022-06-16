@@ -22,6 +22,7 @@ from torch.utils.data import Dataset, DataLoader
 import scipy.sparse.linalg as ss
 from jax import random
 from neural_tangents import stax
+from random import shuffle
 
 
 """#Define train module and Dataset"""
@@ -490,7 +491,10 @@ for j in range(len(K_NN)):
         Y = np.load('./datasets/synthetic/y_train_anisotropic_256_9_%d.npy'%(noise_index[i]))	
         YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
         XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
-        print(X.shape)
+        ind_list = [i for i in range(X.shape[0])]
+        shuffle(ind_list)
+        X_q = X[ind_list[0:10000, :]]
+        print(X_q.shape)
         train_data = SynthDataset(X, Y)
         val_data = SynthDataset(XT, YT)
         net_NN = NeuralNetwork(K=K_NN[j],p=0.2,std=1/math.sqrt(K_NN[j])).to(device)
