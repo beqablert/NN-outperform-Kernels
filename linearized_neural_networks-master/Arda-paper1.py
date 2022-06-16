@@ -474,7 +474,7 @@ history_NN_val_acc = []
 noise_index = [2, 1, 2]
 K_RF = 256 ** np.linspace(1.733333, 2.0, num=4)
 K_NT = 256 ** np.linspace(0.733333, 1.0, num=4)
-K_NN = 256 ** np.linspace(0.2, 1.0, num=10)
+K_NN = [3, 35, 256]
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
 for j in range(len(K_NN)):
@@ -490,9 +490,10 @@ for j in range(len(K_NN)):
         Y = np.load('./datasets/synthetic/y_train_anisotropic_256_9_%d.npy'%(noise_index[i]))	
         YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
         XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
+        print(X.shape)
         train_data = SynthDataset(X, Y)
         val_data = SynthDataset(XT, YT)
-        net_NN = NeuralNetwork(K=1024,p=0.2,std=1/math.sqrt(1024)).to(device)
+        net_NN = NeuralNetwork(K=K_NN[j],p=0.2,std=1/math.sqrt(K_NN[j])).to(device)
         print("--------- Train Neural Network... ---------")
         print(noise_index[i])
         print('K is equal to')
