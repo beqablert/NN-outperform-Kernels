@@ -55,7 +55,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             else: # After "Warm up" increase batch size to 1000!
               train_dl = DataLoader(train_data, batch_size=1000,shuffle=True)
               val_dl = DataLoader(val_data, batch_size=1000,shuffle=True)
-            lr_t = 1e-3 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
+            lr_t = 1e-4 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
             optimizer = optim.SGD(model.parameters(), lr=lr_t, momentum=0.9,weight_decay=l2_reg_NN)
         elif model_name == "RF":
             train_dl = DataLoader(train_data, batch_size=10**4, shuffle=True)
@@ -280,7 +280,7 @@ class NeuralNetwork(nn.Module):
 
   def forward(self, x):
     # input to hidden
-    x = x #/ torch.mean(torch.sqrt(torch.linalg.norm(x, axis=0, keepdims=True)))
+    x = x / torch.mean(torch.sqrt(torch.linalg.norm(x, axis=0, keepdims=True)))
     print(x)
     x=self.fc1(x) # / math.sqrt(self.K)
     print(x)#/math.sqrt(self.K)
