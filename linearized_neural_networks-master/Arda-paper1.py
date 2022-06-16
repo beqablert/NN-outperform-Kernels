@@ -500,7 +500,7 @@ for j in range(len(K_NN)):
         print(Y_q.shape)
         train_data = SynthDataset(X, Y)
         val_data = SynthDataset(XT, YT)
-        net_NN = NeuralNetwork(K=K_NN[j],p=0.2,std=1/math.sqrt(K_NN[j])).to(device)
+        net_NN = NeuralNetwork(K=776,p=0.2,std=1/math.sqrt(776)).to(device)
         print("--------- Train Neural Network... ---------")
         print(noise_index[i])
         print('K is equal to')
