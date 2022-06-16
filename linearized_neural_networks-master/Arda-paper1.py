@@ -492,7 +492,7 @@ for j in range(len(K_NN)):
         XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
         train_data = SynthDataset(X, Y)
         val_data = SynthDataset(XT, YT)
-        net_NN = NeuralNetwork(K=1024,p=0.2,std=1/math.sqrt(1024)).to(device)
+        net_NN = NeuralNetwork(K=2,p=0.2,std=1/math.sqrt(2)).to(device)
         print("--------- Train Neural Network... ---------")
         print(noise_index[i])
         print('K is equal to')
