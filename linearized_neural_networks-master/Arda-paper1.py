@@ -495,6 +495,9 @@ for j in range(len(K_NN)):
         shuffle(ind_list)
         X_q = X[ind_list[0:10000], :]
         print(X_q.shape)
+        print(Y.shape)
+        Y_q = Y[ind_list[0:10000], :]
+        print(Y_q.shape)
         train_data = SynthDataset(X, Y)
         val_data = SynthDataset(XT, YT)
         net_NN = NeuralNetwork(K=K_NN[j],p=0.2,std=1/math.sqrt(K_NN[j])).to(device)
