@@ -106,9 +106,11 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
             x    = batch[0].to(device)
             y    = batch[1].to(device)
             yhat = model(x)
+            print(yhat)
             # yhat_norm = (torch.linalg.norm(yhat, dim=0, ord=2))/(yhat.size(0))
             # y_norm = (torch.linalg.norm(y, dim=0, ord=2))/(y.size(0))
             loss = loss_fn(yhat, y)
+            print(loss)
 
             val_loss         += loss.data.item() * x.size(0)
             adjusted_labels = torch.sign(y - torch.mean(y))
@@ -465,7 +467,7 @@ history_NN_yhat_norm = []
 history_NN_y_norm = []
 history_NN_val_acc = []
 
-noise_index = [0, 1, 2]
+noise_index = [2, 1, 2]
 K_RF = 256 ** np.linspace(1.733333, 2.0, num=4)
 K_NT = 256 ** np.linspace(0.733333, 1.0, num=4)
 K_NN = 256 ** np.linspace(0.2, 1.0, num=10)
@@ -486,7 +488,7 @@ for j in range(len(K_NN)):
         XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
         train_data = SynthDataset(X, Y)
         val_data = SynthDataset(XT, YT)
-        net_NN = NeuralNetwork(K=int(K_NN[j]),p=0.2,std=1/math.sqrt(256)).to(device)
+        net_NN = NeuralNetwork(K=1024,p=0.2,std=1/math.sqrt(256)).to(device)
         print("--------- Train Neural Network... ---------")
         print(noise_index[i])
         print('K is equal to')
