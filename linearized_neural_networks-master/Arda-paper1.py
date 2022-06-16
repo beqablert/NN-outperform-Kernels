@@ -468,7 +468,7 @@ history_NN_val_acc = []
 noise_index = [0, 1, 2]
 K_RF = 256 ** np.linspace(1.733333, 2.0, num=4)
 K_NT = 256 ** np.linspace(0.733333, 1.0, num=4)
-K_NN = [256]
+K_NN = 256 ** np.linspace(1.2, 2.0, num=10)
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
 for j in range(len(K_NN)):
