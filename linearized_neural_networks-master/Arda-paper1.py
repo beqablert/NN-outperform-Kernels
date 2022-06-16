@@ -56,12 +56,12 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
               train_dl = DataLoader(train_data, batch_size=1000,shuffle=True)
               val_dl = DataLoader(val_data, batch_size=1000,shuffle=True)
             lr_t = 1e-3 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
-            optimizer = optim.SGD(model.parameters(), lr=lr_t, momentum=0.9, weight_decay=l2_reg_NN)
+            optimizer = optim.SGD(model.parameters(), lr=lr_t, momentum=0.9,weight_decay=l2_reg_NN)
         elif model_name == "RF":
             train_dl = DataLoader(train_data, batch_size=10**4, shuffle=True)
             val_dl = DataLoader(val_data, batch_size=10**4, shuffle=True)
             lr_t = 1e-5 * np.max([1 + np.cos(epoch * np.pi / epochs), 1 / 15])
-            optimizer = optim.Adam(model.parameters(), lr=lr_t, weight_decay=l2_reg_RF)
+            optimizer = optim.Adam(model.parameters(), lr=lr_t,weight_decay=l2_reg_RF)
         elif model_name == "NT":
             train_dl = DataLoader(train_data, batch_size=10 ** 4, shuffle=True)
             val_dl = DataLoader(val_data, batch_size=10 ** 4, shuffle=True)
@@ -123,7 +123,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         val_acc  = num_val_correct / num_val_examples
         val_loss = val_loss / len(val_dl.dataset)        
 
-        if epoch == 1 or epoch % 100 == 0 or epoch == 750: #show progress every 10 epochs
+        if epoch == 1 or epoch % 10 == 0 or epoch == 750: #show progress every 10 epochs
           print('Epoch %3d/%3d, train loss: %5.2f, train acc: %5.2f, val loss: %5.2f, val acc: %5.2f' % \
                 (epoch, epochs, train_loss, train_acc, val_loss, val_acc))
           if epoch == 750:
@@ -453,20 +453,24 @@ history_NT_val_loss = []
 history_NT_yhat_norm = []
 history_NT_y_norm = []
 history_NT_val_acc = []
+
 history_RF_val_loss = []
 history_RF_yhat_norm = []
 history_RF_y_norm = []
 history_RF_val_acc = []
-history_RF_tau_val = []
-history_NN_tau_val = []
-history_NT_tau_val = []
+
+history_NN_val_loss = []
+history_NN_yhat_norm = []
+history_NN_y_norm = []
+history_NN_val_acc = []
 
 noise_index = [0, 1, 2]
 K_RF = 256 ** np.linspace(1.733333, 2.0, num=4)
 K_NT = 256 ** np.linspace(0.733333, 1.0, num=4)
+K_NN = [256]
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
-for j in range(len(K_RF)):
+for j in range(len(K_NN)):
     for i in range(len(noise_index)):
         criterion = nn.MSELoss()
         # print("Tau={}".format(tau[i]))
@@ -481,50 +485,54 @@ for j in range(len(K_RF)):
         XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
         train_data = SynthDataset(X, Y)
         val_data = SynthDataset(XT, YT)
-        # net_NN = NeuralNetwork(K=6,p=0.2,std=1/math.sqrt(256)).to(device)
-        # print("--------- Train Neural Network... ---------")
+        net_NN = NeuralNetwork(K=K_NN[j],p=0.2,std=1/math.sqrt(256)).to(device)
+        print("--------- Train Neural Network... ---------")
+        print(noise_index[i])
+        print('K is equal to')
+        print(int(K_NN[j]))
+        history_NN = train(
+            model = net_NN,
+            loss_fn = criterion,
+            device=device,
+            train_data = train_data,
+            val_data = val_data,
+            model_name= "NN")
+        history_NN_val_acc.append(history_NN["val_acc"])
+        history_NN_val_loss.append(history_NN["val_loss"])
+        history_NN_yhat_norm.append(history_NN["yhat_norm"])
+        history_NN_y_norm.append(history_NN["y_norm"])
+        # print("---------- Calculate and Train RF Kernel... ---------")
         # print(noise_index[i])
-        # history_NN = train(
-        #     model = net_NN,
+        # print('K is equal to')
+        # print(int(K_RF[j]))
+        # net_RF = RF_Network(K=int(K_RF[j]),std=1/math.sqrt(256)).to(device)
+        # history_RF = train(
+        #     model = net_RF,
         #     loss_fn = criterion,
         #     device=device,
         #     train_data = train_data,
         #     val_data = val_data,
-        #     model_name= "NN")
-        # history_NN_tau.append(history_NN["val_acc"])
-        # history_NN_tau_val.append(history_NN["plot_val"])
-        print("---------- Calculate and Train RF Kernel... ---------")
-        print(noise_index[i])
-        print('K is equal to')
-        print(int(K_RF[j]))
-        net_RF = RF_Network(K=int(K_RF[j]),std=1/math.sqrt(256)).to(device)
-        history_RF = train(
-            model = net_RF,
-            loss_fn = criterion,
-            device=device,
-            train_data = train_data,
-            val_data = val_data,
-            model_name="RF")
-        history_RF_val_acc.append(history_RF["val_acc"])
-        history_RF_val_loss.append(history_RF["val_loss"])
-        history_RF_yhat_norm.append(history_RF["yhat_norm"])
-        history_RF_y_norm.append(history_RF["y_norm"])
-        print("-------- Calculate NT Kernel.... ----------")
-        print(noise_index[i])
-        print('K is equal to')
-        print(int(K_NT[j]))
-        net_NT = NT_Network(K=int(K_NT[j]),std=1/math.sqrt(256)).to(device)
-        history_NT = train(
-            model = net_NT,
-            loss_fn = criterion,
-            device=device,
-            train_data = train_data,
-            val_data = val_data,
-            model_name="NT")
-        history_NT_val_acc.append(history_NT["val_acc"])
-        history_NT_val_loss.append(history_NT["val_loss"])
-        history_NT_yhat_norm.append(history_NT["yhat_norm"])
-        history_NT_y_norm.append(history_NT["y_norm"])
+        #     model_name="RF")
+        # history_RF_val_acc.append(history_RF["val_acc"])
+        # history_RF_val_loss.append(history_RF["val_loss"])
+        # history_RF_yhat_norm.append(history_RF["yhat_norm"])
+        # history_RF_y_norm.append(history_RF["y_norm"])
+        # print("-------- Calculate NT Kernel.... ----------")
+        # print(noise_index[i])
+        # print('K is equal to')
+        # print(int(K_NT[j]))
+        # net_NT = NT_Network(K=int(K_NT[j]),std=1/math.sqrt(256)).to(device)
+        # history_NT = train(
+        #     model = net_NT,
+        #     loss_fn = criterion,
+        #     device=device,
+        #     train_data = train_data,
+        #     val_data = val_data,
+        #     model_name="NT")
+        # history_NT_val_acc.append(history_NT["val_acc"])
+        # history_NT_val_loss.append(history_NT["val_loss"])
+        # history_NT_yhat_norm.append(history_NT["yhat_norm"])
+        # history_NT_y_norm.append(history_NT["y_norm"])
         #print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NN["val_acc"][-1]))
         #print("Test Accuracy of Random Features for tau = {} is {}".format(tau[i], history_RF["val_acc"][-1]))
         #   print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NT["val_acc"][-1]))
