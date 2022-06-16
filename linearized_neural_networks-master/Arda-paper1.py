@@ -493,12 +493,12 @@ for j in range(len(K_NN)):
         XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
         ind_list = [i for i in range(X.shape[0])]
         shuffle(ind_list)
-        X_q = X[ind_list[0:7100], :]
+        X_q = X[ind_list[0:776], :]
         print(X_q.shape)
         print(Y.shape)
-        Y_q = Y[ind_list[0:7100], :]
+        Y_q = Y[ind_list[0:776], :]
         print(Y_q.shape)
-        train_data = SynthDataset(X, Y)
+        train_data = SynthDataset(X_q, Y_q)
         val_data = SynthDataset(XT, YT)
         net_NN = NeuralNetwork(K=776,p=0.2,std=1/math.sqrt(776)).to(device)
         print("--------- Train Neural Network... ---------")
