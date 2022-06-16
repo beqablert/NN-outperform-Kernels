@@ -280,14 +280,14 @@ class NeuralNetwork(nn.Module):
 
   def forward(self, x):
     # input to hidden
-    x = x / torch.mean(torch.sqrt(torch.linalg.norm(x, axis=0, keepdims=True)))
+    x = x #/ torch.mean(torch.sqrt(torch.linalg.norm(x, axis=0, keepdims=True)))
     print(x)
     x=self.fc1(x) # / math.sqrt(self.K)
     print(x)#/math.sqrt(self.K)
     x=self.g(x)
     x = self.fc2(x)
     print(x)
-    exit()
+    #exit()
     x = self.drop(x)
     # x = self.soft(x)
     return x
