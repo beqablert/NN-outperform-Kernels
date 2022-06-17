@@ -124,7 +124,7 @@ def train(model, loss_fn, train_data, val_data, epochs=750, device='cpu',model_n
         val_acc  = num_val_correct / num_val_examples
         val_loss = val_loss / len(val_dl.dataset)        
 
-        if epoch == 1 or epoch % 10 == 0 or epoch == 750: #show progress every 10 epochs
+        if epoch == 1 or epoch % 100 == 0 or epoch == 750: #show progress every 10 epochs
           print('Epoch %3d/%3d, train loss: %5.2f, train acc: %5.2f, val loss: %5.2f, val acc: %5.2f' % \
                 (epoch, epochs, train_loss, train_acc, val_loss, val_acc))
           if epoch == 750:
