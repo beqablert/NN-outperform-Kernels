@@ -472,7 +472,7 @@ history_NN_yhat_norm = []
 history_NN_y_norm = []
 history_NN_val_acc = []
 
-noise_index = [2, 1, 2]
+noise_index = [0, 1, 2]
 K_RF = 256 ** np.linspace(1.733333, 2.0, num=4)
 K_NT = 256 ** np.linspace(0.733333, 1.0, num=4)
 K_NN = [3, 35, 256]
@@ -491,16 +491,16 @@ for j in range(len(K_NN)):
         Y = np.load('./datasets/synthetic/y_train_anisotropic_256_9_%d.npy'%(noise_index[i]))	
         YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
         XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
-        ind_list = [i for i in range(X.shape[0])]
-        shuffle(ind_list)
-        X_q = X[ind_list[0:776], :]
-        print(X_q.shape)
-        print(Y.shape)
-        Y_q = Y[ind_list[0:776], :]
-        print(Y_q.shape)
-        train_data = SynthDataset(X_q, Y_q)
+        # ind_list = [i for i in range(X.shape[0])]
+        # shuffle(ind_list)
+        # X_q = X[ind_list[0:776], :]
+        # print(X_q.shape)
+        # print(Y.shape)
+        # Y_q = Y[ind_list[0:776], :]
+        # print(Y_q.shape)
+        train_data = SynthDataset(X, Y)
         val_data = SynthDataset(XT, YT)
-        net_NN = NeuralNetwork(K=776,p=0.2,std=1/math.sqrt(776)).to(device)
+        net_NN = NeuralNetwork(K=int(K_NN[j]),p=0.2,std=1/math.sqrt(int(K_NN[j]))).to(device)
         print("--------- Train Neural Network... ---------")
         print(noise_index[i])
         print('K is equal to')
@@ -551,6 +551,53 @@ for j in range(len(K_NN)):
         #print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NN["val_acc"][-1]))
         #print("Test Accuracy of Random Features for tau = {} is {}".format(tau[i], history_RF["val_acc"][-1]))
         #   print("Test Accuracy of Neural Network for tau = {} is {}".format(tau[i], history_NT["val_acc"][-1]))
+num_samples = 256 ** np.linspace(1.0, 1.6, num=10)
+for i in range(len(num_samples)):
+    for j in range(len(noise_index)):
+        criterion = nn.MSELoss()
+        X = np.load('./datasets/synthetic/X_train_anisotropic_256_9_%d.npy'%(noise_index[i]))
+        Y = np.load('./datasets/synthetic/y_train_anisotropic_256_9_%d.npy'%(noise_index[i]))	
+        YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
+        XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
+        ind_list = [i for i in range(X.shape[0])]
+        shuffle(ind_list)
+        X_q = X[ind_list[0:int(num_samples[i])], :]
+        print(X_q.shape)
+        Y_q = Y[ind_list[0:int(num_samples[i])], :]
+        print(Y_q.shape)
+        train_data = SynthDataset(X_q, Y_q)
+        val_data = SynthDataset(XT, YT)
+        net_NN = NeuralNetwork(K=776,p=0.2,std=1/math.sqrt(776)).to(device)
+        print("--------- Train Neural Network... ---------")
+        print(noise_index[i])
+        print('N is equal to')
+        print(int(num_samples[i]))
+        history_NN = train(
+            model = net_NN,
+            loss_fn = criterion,
+            device=device,
+            train_data = train_data,
+            val_data = val_data,
+            model_name= "NN")
+        history_NN_val_acc.append(history_NN["val_acc"])
+        history_NN_val_loss.append(history_NN["val_loss"])
+        history_NN_yhat_norm.append(history_NN["yhat_norm"])
+        history_NN_y_norm.append(history_NN["y_norm"])
+        print("-------- Calculate NT Kernel.... ----------")
+        print(noise_index[i])
+        net_NT = NT_Network(K=776,std=1/math.sqrt(256)).to(device)
+        history_NT = train(
+            model = net_NT,
+            loss_fn = criterion,
+            device=device,
+            train_data = train_data,
+            val_data = val_data,
+            model_name="NT")
+        history_NT_val_acc.append(history_NT["val_acc"])
+        history_NT_val_loss.append(history_NT["val_loss"])
+        history_NT_yhat_norm.append(history_NT["yhat_norm"])
+        history_NT_y_norm.append(history_NT["y_norm"])
+
 
 
 #   K = NTK2(X_train.T,X_train.T)
