@@ -478,19 +478,19 @@ K_NT = 256 ** np.linspace(0.733333, 1.0, num=4)
 K_NN = [3, 35, 256]
 # tau = np.linspace(0,3,num=15) # 15 points for different noises in their plot; Noise strength
 # errors_RF = np.zeros((len(tau), 4)) #Train Loss, Train Accuracy, Test Loss, Test Accuracy
-for j in range(len(K_NN)):
-    for i in range(len(noise_index)):
-        criterion = nn.MSELoss()
+# for j in range(len(K_NN)):
+#     for i in range(len(noise_index)):
+#         criterion = nn.MSELoss()
         # print("Tau={}".format(tau[i]))
         # print("Generate Data with noise in high frequencies....")
         # X_train,Y_train,= get_data_with_HF_noise(tau=tau[i],x_train_=x_train_,y_train=y_train)
         # X_test,Y_test,= get_data_with_HF_noise(tau=tau[i],x_train_=x_test,y_train=y_test)
         # train_data = FashionDataset(X_train,Y_train)
         # val_data = FashionDataset(X_test,Y_test)
-        X = np.load('./datasets/synthetic/X_train_anisotropic_256_9_%d.npy'%(noise_index[i]))
-        Y = np.load('./datasets/synthetic/y_train_anisotropic_256_9_%d.npy'%(noise_index[i]))	
-        YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
-        XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
+        # X = np.load('./datasets/synthetic/X_train_anisotropic_256_9_%d.npy'%(noise_index[i]))
+        # Y = np.load('./datasets/synthetic/y_train_anisotropic_256_9_%d.npy'%(noise_index[i]))	
+        # YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
+        # XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
         # ind_list = [i for i in range(X.shape[0])]
         # shuffle(ind_list)
         # X_q = X[ind_list[0:776], :]
@@ -498,24 +498,24 @@ for j in range(len(K_NN)):
         # print(Y.shape)
         # Y_q = Y[ind_list[0:776], :]
         # print(Y_q.shape)
-        train_data = SynthDataset(X, Y)
-        val_data = SynthDataset(XT, YT)
-        net_NN = NeuralNetwork(K=int(K_NN[j]),p=0.2,std=1/math.sqrt(int(K_NN[j]))).to(device)
-        print("--------- Train Neural Network... ---------")
-        print(noise_index[i])
-        print('K is equal to')
-        print(int(K_NN[j]))
-        history_NN = train(
-            model = net_NN,
-            loss_fn = criterion,
-            device=device,
-            train_data = train_data,
-            val_data = val_data,
-            model_name= "NN")
-        history_NN_val_acc.append(history_NN["val_acc"])
-        history_NN_val_loss.append(history_NN["val_loss"])
-        history_NN_yhat_norm.append(history_NN["yhat_norm"])
-        history_NN_y_norm.append(history_NN["y_norm"])
+        # train_data = SynthDataset(X, Y)
+        # val_data = SynthDataset(XT, YT)
+        # net_NN = NeuralNetwork(K=int(K_NN[j]),p=0.2,std=1/math.sqrt(int(K_NN[j]))).to(device)
+        # print("--------- Train Neural Network... ---------")
+        # print(noise_index[i])
+        # print('K is equal to')
+        # print(int(K_NN[j]))
+        # history_NN = train(
+        #     model = net_NN,
+        #     loss_fn = criterion,
+        #     device=device,
+        #     train_data = train_data,
+        #     val_data = val_data,
+        #     model_name= "NN")
+        # history_NN_val_acc.append(history_NN["val_acc"])
+        # history_NN_val_loss.append(history_NN["val_loss"])
+        # history_NN_yhat_norm.append(history_NN["yhat_norm"])
+        # history_NN_y_norm.append(history_NN["y_norm"])
         # print("---------- Calculate and Train RF Kernel... ---------")
         # print(noise_index[i])
         # print('K is equal to')
@@ -555,10 +555,10 @@ num_samples = 256 ** np.linspace(1.0, 1.6, num=10)
 for i in range(len(num_samples)):
     for j in range(len(noise_index)):
         criterion = nn.MSELoss()
-        X = np.load('./datasets/synthetic/X_train_anisotropic_256_9_%d.npy'%(noise_index[i]))
-        Y = np.load('./datasets/synthetic/y_train_anisotropic_256_9_%d.npy'%(noise_index[i]))	
-        YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
-        XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[i]))
+        X = np.load('./datasets/synthetic/X_train_anisotropic_256_9_%d.npy'%(noise_index[j]))
+        Y = np.load('./datasets/synthetic/y_train_anisotropic_256_9_%d.npy'%(noise_index[j]))	
+        YT = np.load('./datasets/synthetic/y_test_anisotropic_256_9_%d.npy'%(noise_index[j]))
+        XT = np.load('./datasets/synthetic/X_test_anisotropic_256_9_%d.npy'%(noise_index[j]))
         ind_list = [i for i in range(X.shape[0])]
         shuffle(ind_list)
         X_q = X[ind_list[0:int(num_samples[i])], :]
