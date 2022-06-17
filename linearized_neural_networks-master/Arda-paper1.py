@@ -569,9 +569,9 @@ for i in range(len(num_samples)):
         val_data = SynthDataset(XT, YT)
         net_NN = NeuralNetwork(K=776,p=0.2,std=1/math.sqrt(776)).to(device)
         print("--------- Train Neural Network... ---------")
-        print(noise_index[i])
+        print(noise_index[j])
         print('N is equal to')
-        print(int(num_samples[i]))
+        print(int(num_samples[j]))
         history_NN = train(
             model = net_NN,
             loss_fn = criterion,
@@ -584,7 +584,7 @@ for i in range(len(num_samples)):
         history_NN_yhat_norm.append(history_NN["yhat_norm"])
         history_NN_y_norm.append(history_NN["y_norm"])
         print("-------- Calculate NT Kernel.... ----------")
-        print(noise_index[i])
+        print(noise_index[j])
         net_NT = NT_Network(K=776,std=1/math.sqrt(256)).to(device)
         history_NT = train(
             model = net_NT,
