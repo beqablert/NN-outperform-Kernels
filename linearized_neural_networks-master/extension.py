@@ -14,8 +14,8 @@ from neural_tangents import stax
 import neural_tangents as nt
 import scipy.sparse as ss
 
-device = torch.device("cpu")
-# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 
 def make_linsep_GMM(dim, N, var,plot,mu_r_1=None,mu_r_2=None): 
